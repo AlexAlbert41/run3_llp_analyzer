@@ -1,9 +1,9 @@
-#include "RazorAnalyzer.h"
+#include "RazorAnalyzer_TnP.h"
 #include "TLorentzVector.h"
 
 using namespace std;
 
-RazorAnalyzer::RazorAnalyzer(TTree *tree) : llp_event(tree)
+RazorAnalyzer_TnP::RazorAnalyzer_TnP(TTree *tree) : llp_event_TnP(tree)
 {
     //turn off all branches
     // fChain->SetBranchStatus("*", 1);
@@ -11,18 +11,18 @@ RazorAnalyzer::RazorAnalyzer(TTree *tree) : llp_event(tree)
 
 }
 
-RazorAnalyzer::~RazorAnalyzer()
+RazorAnalyzer_TnP::~RazorAnalyzer_TnP()
 {
 
 }
 
-void RazorAnalyzer::Analyze(bool isData, int option, string outputFileName, string label) {
-    cout << "Analyze method called on base RazorAnalyzer instance.  Parameters were: " << isData << " " << option << " " << outputFileName << " " << label << endl;
+void RazorAnalyzer_TnP::Analyze(bool isData, int option, string outputFileName, string label) {
+    cout << "Analyze method called on base RazorAnalyzer_TnP instance.  Parameters were: " << isData << " " << option << " " << outputFileName << " " << label << endl;
 }
 
 //NOTE: the functions below need to be maintained by hand.  If variables are added or removed from the ntuple, these functions need to be updated to reflect the changes.
 
-void RazorAnalyzer::EnableAll(){
+void RazorAnalyzer_TnP::EnableAll(){
     EnableEventInfo();
     EnableMuons();
     EnableElectrons();
@@ -37,7 +37,7 @@ void RazorAnalyzer::EnableAll(){
 }
 
 
-void RazorAnalyzer::EnableEventInfo(){
+void RazorAnalyzer_TnP::EnableEventInfo(){
     fChain->SetBranchStatus("nPV", 1);
     fChain->SetBranchStatus("pvX", 1);
     fChain->SetBranchStatus("pvY", 1);
@@ -62,21 +62,21 @@ void RazorAnalyzer::EnableEventInfo(){
 
 }
 
-void RazorAnalyzer::EnablePVAll() {
+void RazorAnalyzer_TnP::EnablePVAll() {
     fChain->SetBranchStatus("nPVAll",1);
     fChain->SetBranchStatus("pvAllX",1);
     fChain->SetBranchStatus("pvAllY",1);
     fChain->SetBranchStatus("pvAllZ",1);
 }
 
-void RazorAnalyzer::EnablePileup(){
+void RazorAnalyzer_TnP::EnablePileup(){
     fChain->SetBranchStatus("nBunchXing", 1);
     fChain->SetBranchStatus("BunchXing", 1);
     fChain->SetBranchStatus("nPU", 1);
     fChain->SetBranchStatus("nPUmean", 1);
 }
 
-void RazorAnalyzer::EnableMuons(){
+void RazorAnalyzer_TnP::EnableMuons(){
     //fChain->SetBranchStatus("nMuons", 1);
     fChain->SetBranchStatus("nMuon", 1);
     fChain->SetBranchStatus("muonE", 1);
@@ -115,7 +115,7 @@ void RazorAnalyzer::EnableMuons(){
     fChain->SetBranchStatus("muon_passHLTFilter", 1);
 }
 
-void RazorAnalyzer::EnableElectrons(){
+void RazorAnalyzer_TnP::EnableElectrons(){
     fChain->SetBranchStatus("nElectrons", 1);
     fChain->SetBranchStatus("eleE", 1);
     fChain->SetBranchStatus("elePt", 1);
@@ -162,7 +162,7 @@ void RazorAnalyzer::EnableElectrons(){
     fChain->SetBranchStatus("ele_passHLTFilter", 1);
 }
 
-void RazorAnalyzer::EnableTaus(){
+void RazorAnalyzer_TnP::EnableTaus(){
     fChain->SetBranchStatus("nTaus", 1);
     fChain->SetBranchStatus("tauE", 1);
     fChain->SetBranchStatus("tauPt", 1);
@@ -193,7 +193,7 @@ void RazorAnalyzer::EnableTaus(){
     fChain->SetBranchStatus("tau_leadChargedHadrCandID", 1);
 }
 
-void RazorAnalyzer::EnableIsoPFCandidates(){
+void RazorAnalyzer_TnP::EnableIsoPFCandidates(){
     // fChain->SetBranchStatus("nIsoPFCandidates", 1);
     // fChain->SetBranchStatus("isoPFCandidatePt", 1);
     // fChain->SetBranchStatus("isoPFCandidateEta", 1);
@@ -203,7 +203,7 @@ void RazorAnalyzer::EnableIsoPFCandidates(){
     // fChain->SetBranchStatus("isoPFCandidatePdgId", 1);
 }
 
-void RazorAnalyzer::EnablePhotons(){
+void RazorAnalyzer_TnP::EnablePhotons(){
     fChain->SetBranchStatus("nPhotons", 1);
     fChain->SetBranchStatus("phoE", 1);
     fChain->SetBranchStatus("phoPt", 1);
@@ -252,7 +252,7 @@ void RazorAnalyzer::EnablePhotons(){
     fChain->SetBranchStatus("pho_anyRecHitSwitchToGain1", 1);
 };
 
-void RazorAnalyzer::EnableCaloJets(){
+void RazorAnalyzer_TnP::EnableCaloJets(){
   fChain->SetBranchStatus("nCaloJets", 1);
   fChain->SetBranchStatus("calojetE", 1);
   fChain->SetBranchStatus("calojetPt", 1);
@@ -260,7 +260,7 @@ void RazorAnalyzer::EnableCaloJets(){
   fChain->SetBranchStatus("calojetPhi", 1);
 };
 
-void RazorAnalyzer::EnableJets(){
+void RazorAnalyzer_TnP::EnableJets(){
     fChain->SetBranchStatus("nJets", 1);
     fChain->SetBranchStatus("jetE", 1);
     fChain->SetBranchStatus("jetPt", 1);
@@ -302,7 +302,7 @@ void RazorAnalyzer::EnableJets(){
     fChain->SetBranchStatus("jetRechitT", 1);
 };
 
-void RazorAnalyzer::EnableFatJets(){
+void RazorAnalyzer_TnP::EnableFatJets(){
     fChain->SetBranchStatus("nFatJets", 1);
     fChain->SetBranchStatus("fatJetE", 1);
     fChain->SetBranchStatus("fatJetPt", 1);
@@ -323,7 +323,7 @@ void RazorAnalyzer::EnableFatJets(){
     fChain->SetBranchStatus("fatJetPassIDTight", 1);
 }
 
-void RazorAnalyzer::EnableMet(){
+void RazorAnalyzer_TnP::EnableMet(){
     fChain->SetBranchStatus("metPt", 1);
     fChain->SetBranchStatus("metPhi", 1);
     fChain->SetBranchStatus("metType1Pt", 1);
@@ -370,11 +370,11 @@ void RazorAnalyzer::EnableMet(){
 
 }
 
-void RazorAnalyzer::EnableRazor()
+void RazorAnalyzer_TnP::EnableRazor()
 {
 
 };
-void RazorAnalyzer::EnableDT()
+void RazorAnalyzer_TnP::EnableDT()
 {
   fChain->SetBranchStatus("nDtRechits", 1);
   fChain->SetBranchStatus("dtRechitStation", 1);
@@ -417,7 +417,7 @@ void RazorAnalyzer::EnableDT()
 
 
 };
-void RazorAnalyzer::EnableCSC()
+void RazorAnalyzer_TnP::EnableCSC()
 {
     fChain->SetBranchStatus("ncscRechits", 1);
     fChain->SetBranchStatus("cscRechitsPhi", 1);
@@ -452,7 +452,7 @@ void RazorAnalyzer::EnableCSC()
 
 };
 
-void RazorAnalyzer::EnableMC(){
+void RazorAnalyzer_TnP::EnableMC(){
     fChain->SetBranchStatus("nGenJets", 1);
     fChain->SetBranchStatus("genJetE", 1);
     fChain->SetBranchStatus("genJetPt", 1);
@@ -479,7 +479,7 @@ void RazorAnalyzer::EnableMC(){
     fChain->SetBranchStatus("alphasWeights", 1);
 }
 
-void RazorAnalyzer::EnableGenParticles(){
+void RazorAnalyzer_TnP::EnableGenParticles(){
     fChain->SetBranchStatus("nGenParticle", 1);
     fChain->SetBranchStatus("gParticleMotherId", 1);
     fChain->SetBranchStatus("gParticleMotherIndex", 1);
@@ -494,7 +494,7 @@ void RazorAnalyzer::EnableGenParticles(){
     fChain->SetBranchStatus("gParticleProdVertexZ", 1);
 
 }
-void RazorAnalyzer::EnableLLP(){
+void RazorAnalyzer_TnP::EnableLLP(){
     fChain->SetBranchStatus("gLLP_eta", 1);
     fChain->SetBranchStatus("gLLP_phi", 1);
     fChain->SetBranchStatus("gLLP_beta", 1);
@@ -514,7 +514,7 @@ void RazorAnalyzer::EnableLLP(){
 
 }
 
-void RazorAnalyzer::EnableEcalRechits(){
+void RazorAnalyzer_TnP::EnableEcalRechits(){
     fChain->SetBranchStatus("ecalRechit_Eta", 1);
     fChain->SetBranchStatus("ecalRechit_Phi", 1);
     fChain->SetBranchStatus("ecalRechit_X", 1);
@@ -529,7 +529,7 @@ void RazorAnalyzer::EnableEcalRechits(){
     fChain->SetBranchStatus("ecalRechit_transpCorr", 1);
 }
 
-void RazorAnalyzer::EnableTracks(){
+void RazorAnalyzer_TnP::EnableTracks(){
     fChain->SetBranchStatus("track_Pt", 1);
     fChain->SetBranchStatus("track_Eta", 1);
     fChain->SetBranchStatus("track_Phi", 1);
@@ -548,7 +548,7 @@ void RazorAnalyzer::EnableTracks(){
 }
 
 
-double RazorAnalyzer::deltaPhi(double phi1, double phi2) {
+double RazorAnalyzer_TnP::deltaPhi(double phi1, double phi2) {
   double dphi = phi1-phi2;
   while (dphi > TMath::Pi())
     dphi -= TMath::TwoPi();
@@ -557,32 +557,32 @@ double RazorAnalyzer::deltaPhi(double phi1, double phi2) {
   return dphi;
 };
 
-double RazorAnalyzer::deltaR(double eta1, double phi1, double eta2, double phi2) {
+double RazorAnalyzer_TnP::deltaR(double eta1, double phi1, double eta2, double phi2) {
   double dphi = deltaPhi(phi1,phi2);
   double deta = eta1 - eta2;
   return sqrt( dphi*dphi + deta*deta);
 };
 
-TLorentzVector RazorAnalyzer::makeTLorentzVector(double pt, double eta, double phi, double energy){
+TLorentzVector RazorAnalyzer_TnP::makeTLorentzVector(double pt, double eta, double phi, double energy){
     TLorentzVector vec;
     vec.SetPtEtaPhiE(pt, eta, phi, energy);
     return vec;
 };
 
-TLorentzVector RazorAnalyzer::makeTLorentzVectorPtEtaPhiM(double pt, double eta, double phi, double mass){
+TLorentzVector RazorAnalyzer_TnP::makeTLorentzVectorPtEtaPhiM(double pt, double eta, double phi, double mass){
     TLorentzVector vec;
     vec.SetPtEtaPhiM(pt, eta, phi, mass);
     return vec;
 };
 
-double RazorAnalyzer::GetMT( TLorentzVector visible, TVector3 met)
+double RazorAnalyzer_TnP::GetMT( TLorentzVector visible, TVector3 met)
 {
   TVector3 vis( visible.Px(), visible.Py(), visible.Pz() );
   //return sqrt( visible.M2() + 2.0*( vis.Pt()*met.Pt() - vis.Dot( met ) ) );
   return sqrt( 2.0*( vis.Pt()*met.Pt() - vis.Dot( met ) ) );
 };
 
-double RazorAnalyzer::GetMT( TLorentzVector visible, TLorentzVector met)
+double RazorAnalyzer_TnP::GetMT( TLorentzVector visible, TLorentzVector met)
 {
   TVector3 _met( met.Px(), met.Py(), met.Pz() );
   return GetMT( visible, _met );

@@ -2,10 +2,10 @@
 //
 //Author: Cristian Pena & Si Xie
 
-#ifndef RazorAnalyzer_h
-#define RazorAnalyzer_h
+#ifndef RazorAnalyzer_TnP_h
+#define RazorAnalyzer_TnP_h
 
-#include "llp_event.h" //This is a MakeClass of the llp tree in the ntuple to be analyzed
+#include "llp_event_TnP.h" //This is a MakeClass of the llp tree in the ntuple to be analyzed
 
 
 //ROOT includes
@@ -23,10 +23,10 @@
 #include <iostream>
 using namespace std;
 
-class RazorAnalyzer: public llp_event {
+class RazorAnalyzer_TnP: public llp_event_TnP {
     public :
-        RazorAnalyzer(TTree *tree=0);
-        virtual ~RazorAnalyzer();
+        RazorAnalyzer_TnP(TTree *tree=0);
+        virtual ~RazorAnalyzer_TnP();
 
         //------ LIST OF ANALYSES ------//
         virtual void Analyze(bool isData, int option, string outputFileName, string label);
