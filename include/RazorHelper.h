@@ -13,7 +13,7 @@
 #include "TRandom.h"
 
 
-#include "RazorAnalyzer.h"
+#include "RazorAnalyzer_TnP.h"
 
 class RazorHelper {
 

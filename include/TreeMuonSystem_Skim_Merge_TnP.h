@@ -27,7 +27,7 @@
 #include "TTree.h"
 #include "DBSCAN.h"
 
-#include "RazorAnalyzer.h"
+#include "RazorAnalyzer_TnP.h"
 
 #include "RazorHelper.h"
 
