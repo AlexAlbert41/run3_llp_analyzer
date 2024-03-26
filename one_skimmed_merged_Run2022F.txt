@@ -1,0 +1,1 @@
+root://cmsxrootd.fnal.gov//store/user/amalbert/MDSTriggerEff/skimmed_merged_2022_withArrays/merged_nTuples_Run2022F.root

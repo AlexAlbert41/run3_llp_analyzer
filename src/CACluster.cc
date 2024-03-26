@@ -64,7 +64,7 @@ int CACluster::run()
 }
 void CACluster::clusterProperties()
 {
-  
+  //cout<<"nClusters"<<nClusters<<endl;
 
   for (int i = 0; i < nClusters; i++){
     cluster tmpCluster;
@@ -399,6 +399,7 @@ void CACluster::merge_clusters()
   //change cluster ID of points
 
   // get the list of eta and phi of the clusters
+  
   vector<float> clusterEta;
   vector<float> clusterPhi;
   for(unsigned int j = 0; j < nClusters; j++){
@@ -508,7 +509,9 @@ void CACluster::merge_clusters()
       modified = true;
     }
   }
-  clusters.clear();
+  
+  //clusters.clear();
+  
 }
 
 

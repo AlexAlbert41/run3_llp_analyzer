@@ -150,7 +150,7 @@ int main(int argc, char* argv[]){
 	      }
 	    else
 	      {
-		theChain->SetName("HSCParticleAnalyzer/BaseName/HscpCandidates");
+		theChain->SetName("llp");
 		std::cout << "[INFO]: alternative configuration for tchain"<< std::endl;
 	      }
 	    theChain->Add( curFileName.c_str() );
