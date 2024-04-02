@@ -151,6 +151,7 @@ public:
 
   float         dtRechitClusterMet_dPhi[N_MAX_CSC];
 
+  bool          dtRechitCluster_matchToProbeMuon[N_MAX_CSC];
 
 
 
@@ -227,7 +228,7 @@ public:
   int           cscRechitClusterNRechitChamberMinus41[N_MAX_CSC];
   int           cscRechitClusterNRechitChamberMinus42[N_MAX_CSC];
   float         cscRechitClusterMet_dPhi[N_MAX_CSC];
-
+  bool          cscRechitCluster_matchToProbeMuon[N_MAX_CSC];
 
   //gLLP
   int nGLLP;

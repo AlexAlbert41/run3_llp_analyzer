@@ -427,7 +427,7 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
 
     tree_->SetBranchAddress("dtRechitClusterMet_dPhi",             dtRechitClusterMet_dPhi);
 
-
+  tree_->SetBranchAddress("dtRechitCluster_matchToProbeMuon",             dtRechitCluster_matchToProbeMuon);
 
 
 
@@ -513,6 +513,7 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
 
   tree_->SetBranchAddress("cscRechitClusterMet_dPhi",             cscRechitClusterMet_dPhi);
 
+  tree_->SetBranchAddress("cscRechitCluster_matchToProbeMuon",             cscRechitCluster_matchToProbeMuon);
 
   tree_->SetBranchAddress("nGLLP",    &nGLLP);
 
@@ -738,7 +739,7 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
     tree_->Branch("cscRechitClusterNRechitChamberMinus41",             cscRechitClusterNRechitChamberMinus41,             "cscRechitClusterNRechitChamberMinus41[nCscRechitClusters]/I");
     tree_->Branch("cscRechitClusterNRechitChamberMinus42",             cscRechitClusterNRechitChamberMinus42,             "cscRechitClusterNRechitChamberMinus42[nCscRechitClusters]/I");
     tree_->Branch("cscRechitClusterMet_dPhi",             cscRechitClusterMet_dPhi,             "cscRechitClusterMet_dPhi[nCscRechitClusters]/F");
-
+    tree_->Branch("cscRechitCluster_matchToProbeMuon",             cscRechitCluster_matchToProbeMuon,            "cscRechitCluster_matchToProbeMuon[nCscRechitClusters]/O");
 
 
 
@@ -829,7 +830,7 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
         tree_->Branch("dtRechitCluster_match_MB1hits_0p5",             dtRechitCluster_match_MB1hits_0p5,             "dtRechitCluster_match_MB1hits_0p5[nDtRechitClusters]/I");
         tree_->Branch("dtRechitCluster_match_MB1hits_cosmics_plus",             dtRechitCluster_match_MB1hits_cosmics_plus,             "dtRechitCluster_match_MB1hits_cosmics_plus[nDtRechitClusters]/I");
         tree_->Branch("dtRechitCluster_match_MB1hits_cosmics_minus",             dtRechitCluster_match_MB1hits_cosmics_minus,             "dtRechitCluster_match_MB1hits_cosmics_minus[nDtRechitClusters]/I");
-
+        tree_->Branch("dtRechitCluster_matchToProbeMuon",             dtRechitCluster_matchToProbeMuon,            "dtRechitCluster_matchToProbeMuon[nDtRechitClusters]/O");
 
 
   //gLLP branches

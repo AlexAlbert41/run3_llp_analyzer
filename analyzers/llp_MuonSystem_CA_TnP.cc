@@ -376,13 +376,12 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
       
       //cout<<"nMuon "<<nMuon<<endl;
       
-      
       for( int i = 0; i < nMuon; i++ )  
       {
         if(!Muon_looseId[i]) continue;
         //cout<<"Found not loose muon"<<endl;
         //cout<<"Muon_pt: "<<Muon_pt[i]<<endl;
-        if(Muon_pt[i] < 25.0) continue; //do we want this cut, only hard muons?
+        if(Muon_pt[i] < 20.0) continue; //do we want this cut, only hard muons?
         //cout<<"Found hard, not loose muon"<<endl;
         //cout<<"Muon_eta"<<Muon_eta[i]<<endl;
         if(fabs(Muon_eta[i]) > 2.4) continue;
@@ -403,12 +402,14 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
         //ask about iso variables
         //float muonIso = (muon_chargedIso[i] + fmax(0.0,  muon_photonIso[i] + muon_neutralHadIso[i] - 0.5*muon_pileupIso[i])) / Muon_pt[i];
         float muonIso = Muon_pfRelIso04_all[i]; //added by alex, address set to Muon_pfRelIso04_all branch orignally fron nanoAODs
-        tmpMuon.passLooseIso = muonIso<0.25;
+        //tmpMuon.passLooseIso = muonIso<0.25;
+        tmpMuon.passLooseIso = muonIso<0.40; //loosen iso for probe muon
         tmpMuon.passTightIso = muonIso<0.15;
         tmpMuon.passVTightIso = muonIso<0.10;
         tmpMuon.passVVTightIso = muonIso<0.05;
 
         tmpMuon.passVetoId = false;
+        if (!tmpMuon.passLooseIso) continue;
         Leptons.push_back(tmpMuon);
       }
       
@@ -438,7 +439,7 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
         Leptons.push_back(tmpElectron);
       }
       */
-      /*
+      
       sort(Leptons.begin(), Leptons.end(), my_largest_pt);
       //cout<< "length of leptons: " << Leptons.size() << endl;
       
@@ -455,9 +456,9 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
         MuonSystem->lepPassTightIso[MuonSystem->nLeptons] = tmp.passTightIso;
         MuonSystem->lepPassVTightIso[MuonSystem->nLeptons] = tmp.passVTightIso;
         MuonSystem->lepPassVVTightIso[MuonSystem->nLeptons] = tmp.passVVTightIso;
-        MuonSystem->nLeptons++;
+        //MuonSystem->nLeptons++;
       }
-      */
+      
     // the following code , until jets, is for reconsturction of the Z-peak. It is taken from https://github.com/cms-lpc-llp/llp_analyzer/blob/master/analyzers/llp_MuonSystem_TnP.cc#L489-L526
     double ZMass = -999;
     double ZPt = -999;
@@ -466,6 +467,7 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
     bool foundZ = false;
     TLorentzVector ZCandidate;
     double leadingLepPt = 0.0;
+    int tagCount=0;
     for( uint i = 0; i < Leptons.size(); i++ )
     {
       for( uint j = i+1; j < Leptons.size(); j++ )
@@ -553,7 +555,7 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
 
 
       
-      if (MuonSystem->lepPassTightIso[MuonSystem->nLeptons] && MuonSystem->lepPassId[MuonSystem->nLeptons] && !tag)
+      if (MuonSystem->lepPassTightIso[MuonSystem->nLeptons] && MuonSystem->lepPassId[MuonSystem->nLeptons])
       {
         MuonSystem->lepTag[MuonSystem->nLeptons] = true;
         if(!isData)
@@ -566,6 +568,7 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
           MuonSystem->lepEff[MuonSystem->nLeptons] = 1.0;
         }
         tag = true;
+        tagCount++;
       }
       else
       {
@@ -592,41 +595,36 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
       }
       MuonSystem->nLeptons++;
     }
-    
     if(MuonSystem->nLeptons!=2)continue;
-    //cout<<"made it past nLeptons=2 cut" << endl;
     if(MuonSystem->category!=2)continue;
-    //cout<<"made it past category=2 cut" << endl;
     if (abs(MuonSystem->lepPdgId[0])!=13)continue;
-    //cout<<"made it past lepPdgId[0] cut" << endl;
     //if (abs(MuonSystem->ZMass)<50)continue; removed to see whole Z-peak
-    if (abs(MuonSystem->lepPt[0])<50)continue;
-    if (abs(MuonSystem->lepPt[1])<50)continue;
-    //cout<<"made it past lepPt cuts" << endl;
+    if (abs(MuonSystem->lepPt[0])<35)continue;
+    if (abs(MuonSystem->lepPt[1])<20)continue;
     // if(MuonSystem->ZMass<120)continue; remove to see whole Z-peak
+    if (tagCount==0) continue;
+    //cout<<"at lep tag"<<endl;
+    //if(MuonSystem->lepTag[0] == MuonSystem->lepTag[1]) continue;
+    //cout<<"made it past lepTag cuts" << endl;
+      //require one tag one probe
+    if(!isData)
     {
-      //cout<<"at lep tag"<<endl;
-      if(MuonSystem->lepTag[0] == MuonSystem->lepTag[1]) continue;
-      //cout<<"made it past lepTag cuts" << endl;
-       //require one tag one probe
-      if(!isData)
-      {
-        MuonSystem->lepOverallSF = 1.0 - (1.0 - MuonSystem->lepSF[0] * MuonSystem->lepEff[0]) * (1 - MuonSystem->lepSF[1] * MuonSystem->lepEff[1]);
-        MuonSystem->lepOverallSF = MuonSystem->lepOverallSF / (1.0 - (1.0 - MuonSystem->lepEff[0]) * (1 - MuonSystem->lepEff[1]));
-      }
-      else{
-        MuonSystem->lepOverallSF = 1.0;
-      }
+      MuonSystem->lepOverallSF = 1.0 - (1.0 - MuonSystem->lepSF[0] * MuonSystem->lepEff[0]) * (1 - MuonSystem->lepSF[1] * MuonSystem->lepEff[1]);
+      MuonSystem->lepOverallSF = MuonSystem->lepOverallSF / (1.0 - (1.0 - MuonSystem->lepEff[0]) * (1 - MuonSystem->lepEff[1]));
+    }
+    else{
+      MuonSystem->lepOverallSF = 1.0;
+    }
 
-      //cout<<"made it past muon cuts!" << endl;
-    }
-    TLorentzVector met;
-    met.SetPtEtaPhiE(metType1Pt,0,metType1Phi,metType1Pt);
-    if ( Leptons.size() > 0 )
-    {
-      TLorentzVector visible = Leptons[0].lepton;
-      MuonSystem->MT = GetMT(visible,met);
-    }
+    //cout<<"made it past muon cuts!" << endl;
+  
+  TLorentzVector met;
+  met.SetPtEtaPhiE(metType1Pt,0,metType1Phi,metType1Pt);
+  if ( Leptons.size() > 0 )
+  {
+    TLorentzVector visible = Leptons[0].lepton;
+    MuonSystem->MT = GetMT(visible,met);
+  }
       
     //cout<<"past z stuff"<<endl;
     //-----------------------------------------------
@@ -679,6 +677,8 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
       }
 
     */
+      bool clusterMatched = false;
+
       MuonSystem->nDTRechits  = 0;
 
       int nDTRechitsChamberMinus12 = 0;
@@ -938,24 +938,26 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
          
           float min_deltaR = 15.;
           int index = 999;
-
+          bool matchedSingleCluster = false;
           //cout<<"here"<<endl;
-          for(int i = 0; i < nMuon; i++)
-          { //cout<<"here2"<<endl;
-            if (fabs(Muon_eta[i]>3.0)) continue;
-            //float muonIso = (muon_chargedIso[i] + fmax(0.0,  muon_photonIso[i] + muon_neutralHadIso[i] - 0.5*muon_pileupIso[i])) / Muon_pt[i];
-            //cout<<"here3"<<endl;
-            float muonIso = Muon_pfRelIso04_all[i]; //added by alex, address set to Muon_pfRelIso04_all branch orignally fron nanoAODs
-            //cout<<MuonSystem->cscRechitClusterEta[MuonSystem->nCscRechitClusters]<<endl;
-            if (RazorAnalyzer_TnP::deltaR(Muon_eta[i], Muon_phi[i], MuonSystem->cscRechitClusterEta[MuonSystem->nCscRechitClusters],MuonSystem->cscRechitClusterPhi[MuonSystem->nCscRechitClusters]) < 0.4 && Muon_pt[i] > MuonSystem->cscRechitClusterMuonVetoPt[MuonSystem->nCscRechitClusters] ) {
-              //cout<<"Matched muon to cluster"<<endl;
-              MuonSystem->cscRechitClusterMuonVetoPt[MuonSystem->nCscRechitClusters]  = Muon_pt[i];
-              //MuonSystem->cscRechitClusterMuonVetoE[MuonSystem->nCscRechitClusters]  = muonE[i];
-              MuonSystem->cscRechitClusterMuonVetoGlobal[MuonSystem->nCscRechitClusters]  = Muon_isGlobal[i];
-              MuonSystem->cscRechitClusterMuonVetoLooseId[MuonSystem->nCscRechitClusters]  = Muon_looseId[i];
-
-            }
+          for(int i = 0; i < Leptons.size(); i++)
+          { 
+            if (!MuonSystem->lepTag[i]) continue; //first find tagged muon
+            for (int j = 0; j < Leptons.size(); j++){
+              if (i==j) continue; //skip if same muon
+              if (RazorAnalyzer_TnP::deltaR(Muon_eta[i], Muon_phi[i], MuonSystem->cscRechitClusterEta[MuonSystem->nCscRechitClusters],MuonSystem->cscRechitClusterPhi[MuonSystem->nCscRechitClusters]) < 0.4 && Muon_pt[i] > MuonSystem->cscRechitClusterMuonVetoPt[MuonSystem->nCscRechitClusters] ) {
+                MuonSystem->cscRechitClusterMuonVetoPt[MuonSystem->nCscRechitClusters]  = Muon_pt[i];
+                //MuonSystem->cscRechitClusterMuonVetoE[MuonSystem->nCscRechitClusters]  = muonE[i];
+                MuonSystem->cscRechitClusterMuonVetoGlobal[MuonSystem->nCscRechitClusters]  = Muon_isGlobal[i];
+                MuonSystem->cscRechitClusterMuonVetoLooseId[MuonSystem->nCscRechitClusters]  = Muon_looseId[i];
+                matchedSingleCluster = true;
+                clusterMatched = true;
+              }
+            
           }
+          }
+          MuonSystem->cscRechitCluster_matchToProbeMuon[MuonSystem->nCscRechitClusters] = matchedSingleCluster;
+          //code added by Alex, determine 
           
           if(!isData)
           {
@@ -1009,7 +1011,7 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
           MuonSystem->cscRechitClusterMet_dPhi[MuonSystem->nCscRechitClusters] =  RazorAnalyzer_TnP::deltaPhi(MuonSystem->cscRechitClusterPhi[MuonSystem->nCscRechitClusters],MuonSystem->metPhi);
           MuonSystem->nCscRechitClusters++;
       }
-
+      if (!clusterMatched) continue;
 
       // DT cluster
 
