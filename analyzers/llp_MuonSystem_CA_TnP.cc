@@ -853,10 +853,10 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
       ds.clusterProperties();
 
       //cout<<"Num clusters per merge: "<<ds.clusters.size()<<endl;
-      ds.merge_clusters();
+      //ds.merge_clusters();
       //cout<<"Num clusters post merge: "<<ds.clusters.size()<<endl;
 
-      ds.sort_clusters();
+      //ds.sort_clusters();
       
       /*
       ds.clusterProperties();
@@ -1049,10 +1049,10 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
       ds_dtRechit.clusterProperties();
 
       //cout<<"Num clusters per merge: "<<ds.clusters.size()<<endl;
-      ds_dtRechit.merge_clusters();
+      //ds_dtRechit.merge_clusters();
       //cout<<"Num clusters post merge: "<<ds.clusters.size()<<endl;
 
-      ds_dtRechit.sort_clusters();
+      //ds_dtRechit.sort_clusters();
 
       MuonSystem->nDtRechitClusters = 0;
 
