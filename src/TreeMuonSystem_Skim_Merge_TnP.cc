@@ -430,7 +430,6 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
   tree_->SetBranchAddress("dtRechitCluster_matchToProbeMuon",             dtRechitCluster_matchToProbeMuon);
 
 
-
   tree_->SetBranchAddress("nCscRechitClusters",             &nCscRechitClusters);
   tree_->SetBranchAddress("cscRechitCluster_match_gLLP",             &cscRechitCluster_match_gLLP);
   tree_->SetBranchAddress("cscRechitCluster_match_gLLP_index",             &cscRechitCluster_match_gLLP_index);
@@ -514,6 +513,11 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
   tree_->SetBranchAddress("cscRechitClusterMet_dPhi",             cscRechitClusterMet_dPhi);
 
   tree_->SetBranchAddress("cscRechitCluster_matchToProbeMuon",             cscRechitCluster_matchToProbeMuon);
+  tree_->SetBranchAddress("cscRechitCluster_PassTimeVeto",            cscRechitCluster_PassTimeVeto);
+
+  tree_->SetBranchAddress("cscRechitCluster_HLTCscCluster_Loose_Decision",             cscRechitCluster_HLTCscCluster_Loose_Decision);
+  tree_->SetBranchAddress("cscRechitCluster_HLTCscCluster_Medium_Decision",             cscRechitCluster_HLTCscCluster_Medium_Decision);
+  tree_->SetBranchAddress("cscRechitCluster_HLTCscCluster_Tight_Decision",             cscRechitCluster_HLTCscCluster_Tight_Decision);
 
   tree_->SetBranchAddress("nGLLP",    &nGLLP);
 
@@ -740,8 +744,10 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
     tree_->Branch("cscRechitClusterNRechitChamberMinus42",             cscRechitClusterNRechitChamberMinus42,             "cscRechitClusterNRechitChamberMinus42[nCscRechitClusters]/I");
     tree_->Branch("cscRechitClusterMet_dPhi",             cscRechitClusterMet_dPhi,             "cscRechitClusterMet_dPhi[nCscRechitClusters]/F");
     tree_->Branch("cscRechitCluster_matchToProbeMuon",             cscRechitCluster_matchToProbeMuon,            "cscRechitCluster_matchToProbeMuon[nCscRechitClusters]/O");
-
-
+    tree_->Branch("cscRechitCluster_PassTimeVeto",            cscRechitCluster_PassTimeVeto,           "cscRechitCluster_PassTimeVeto[nCscRechitClusters]/O");
+    tree_->Branch("cscRechitCluster_HLTCscCluster_Loose_Decision",             cscRechitCluster_HLTCscCluster_Loose_Decision,            "cscRechitCluster_HLTCscCluster_Loose_Decision[nCscRechitClusters]/O");
+    tree_->Branch("cscRechitCluster_HLTCscCluster_Medium_Decision",             cscRechitCluster_HLTCscCluster_Medium_Decision,            "cscRechitCluster_HLTCscCluster_Medium_Decision[nCscRechitClusters]/O");
+    tree_->Branch("cscRechitCluster_HLTCscCluster_Tight_Decision",             cscRechitCluster_HLTCscCluster_Tight_Decision,            "cscRechitCluster_HLTCscCluster_Tight_Decision[nCscRechitClusters]/O");
 
     tree_->Branch("nDtRechitClusters",             &nDtRechitClusters, "nDtRechitClusters/I");
 

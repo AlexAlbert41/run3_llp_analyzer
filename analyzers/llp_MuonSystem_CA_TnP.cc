@@ -677,7 +677,6 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
       }
 
     */
-      bool clusterMatched = false;
 
       MuonSystem->nDTRechits  = 0;
 
@@ -867,6 +866,9 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
       //cout<<ds.clusters.size()<<endl;
 
       MuonSystem->nCscRechitClusters = 0;
+      bool event_cluster_matched_timed = false;
+      float minClusterTime = -5.0;
+      float maxClusterTime=  12.5;
       for ( auto &tmp : ds.clusters  ) {
         //cout<<"entering cluster variables"<<endl;
           MuonSystem->cscRechitClusterX[MuonSystem->nCscRechitClusters] =tmp.x;
@@ -939,6 +941,7 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
           float min_deltaR = 15.;
           int index = 999;
           bool matchedSingleCluster = false;
+          bool passTimeSingleCluster = false;
           //cout<<"here"<<endl;
           for(int i = 0; i < Leptons.size(); i++)
           { 
@@ -951,14 +954,11 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
                 MuonSystem->cscRechitClusterMuonVetoGlobal[MuonSystem->nCscRechitClusters]  = Muon_isGlobal[i];
                 MuonSystem->cscRechitClusterMuonVetoLooseId[MuonSystem->nCscRechitClusters]  = Muon_looseId[i];
                 matchedSingleCluster = true;
-                clusterMatched = true;
-              }
-            
-          }
+                }
+            }
           }
           MuonSystem->cscRechitCluster_matchToProbeMuon[MuonSystem->nCscRechitClusters] = matchedSingleCluster;
-          //code added by Alex, determine 
-          
+        
           if(!isData)
           {
             // match to gen level LLP
@@ -1009,10 +1009,66 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
           }
 
           MuonSystem->cscRechitClusterMet_dPhi[MuonSystem->nCscRechitClusters] =  RazorAnalyzer_TnP::deltaPhi(MuonSystem->cscRechitClusterPhi[MuonSystem->nCscRechitClusters],MuonSystem->metPhi);
+
+          //check if there is at least one cluster that passes the time veto
+          if (tmp.tTotal <= maxClusterTime && tmp.tTotal >= minClusterTime) {
+             passTimeSingleCluster = true;
+          }
+          MuonSystem->cscRechitCluster_PassTimeVeto[MuonSystem->nCscRechitClusters] = passTimeSingleCluster;
+
+          if (passTimeSingleCluster && matchedSingleCluster) event_cluster_matched_timed = true;
+
+      //Now, compute HLT Decision manually
+          //We'll use this to compute the expected HLT decision, compare with the actual trigger decision, and determine efficiency for
+          //events with multiple clusters
+          int eta_nStation_bin = 0;
+          if (fabs(tmp.eta)<1.9 && tmp.nStation10 <= 1){
+            eta_nStation_bin = 0;
+          }
+          if (fabs(tmp.eta)<1.9 && tmp.nStation10 > 1){
+            eta_nStation_bin = 1;
+          }
+          if (fabs(tmp.eta)>=1.9 && tmp.nStation10 <= 1){
+            eta_nStation_bin = 2;
+          }
+          if (fabs(tmp.eta)>=1.9 && tmp.nStation10 > 1){
+            eta_nStation_bin = 3;
+          }
+
+          int loose_rechit_thresh = 10000; int medium_rechit_thresh = 10000; int tight_rechit_thresh = 10000;
+          switch (eta_nStation_bin){
+            case 0:
+              loose_rechit_thresh = 200;
+              medium_rechit_thresh = 300;
+              tight_rechit_thresh = 500;
+              break;
+
+            case 1:
+              loose_rechit_thresh = 100;
+              medium_rechit_thresh = 100;
+              tight_rechit_thresh = 100;
+              break;
+
+            case 2:
+              loose_rechit_thresh = 500;
+              medium_rechit_thresh = 800;
+              tight_rechit_thresh = 800;
+              break;
+
+            case 3:
+              loose_rechit_thresh = 500;
+              medium_rechit_thresh = 500;
+              tight_rechit_thresh = 500;
+              break;
+          }
+          
+          MuonSystem->cscRechitCluster_HLTCscCluster_Loose_Decision[MuonSystem->nCscRechitClusters] = tmp.nhits >= loose_rechit_thresh;
+          MuonSystem->cscRechitCluster_HLTCscCluster_Medium_Decision[MuonSystem->nCscRechitClusters] = tmp.nhits >= medium_rechit_thresh;
+          MuonSystem->cscRechitCluster_HLTCscCluster_Tight_Decision[MuonSystem->nCscRechitClusters] = tmp.nhits >= tight_rechit_thresh;
           MuonSystem->nCscRechitClusters++;
       }
-      if (!clusterMatched) continue;
-
+      if (!event_cluster_matched_timed) continue;
+      
       // DT cluster
 
       points.clear();
