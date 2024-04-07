@@ -152,7 +152,7 @@ public:
   float         dtRechitClusterMet_dPhi[N_MAX_CSC];
 
   bool          dtRechitCluster_matchToProbeMuon[N_MAX_CSC];
-
+  
 
 
   int           nCscRechitClusters;
@@ -229,6 +229,10 @@ public:
   int           cscRechitClusterNRechitChamberMinus42[N_MAX_CSC];
   float         cscRechitClusterMet_dPhi[N_MAX_CSC];
   bool          cscRechitCluster_matchToProbeMuon[N_MAX_CSC];
+  bool          cscRechitCluster_PassTimeVeto[N_MAX_CSC];
+  bool          cscRechitCluster_HLTCscCluster_Loose_Decision[N_MAX_CSC];
+  bool          cscRechitCluster_HLTCscCluster_Medium_Decision[N_MAX_CSC];
+  bool          cscRechitCluster_HLTCscCluster_Tight_Decision[N_MAX_CSC];
 
   //gLLP
   int nGLLP;
