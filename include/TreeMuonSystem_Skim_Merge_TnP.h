@@ -62,7 +62,7 @@ public:
   Flag2_globalTightHalo2016Filter, Flag2_BadChargedCandidateFilter, Flag2_EcalDeadCellTriggerPrimitiveFilter,
   Flag2_ecalBadCalibFilter, Flag2_eeBadScFilter, Flag2_all;
 
-
+  int numProbeMuons;
 
   //csc
   int           nCscRechits;
@@ -230,6 +230,7 @@ public:
   float         cscRechitClusterMet_dPhi[N_MAX_CSC];
   bool          cscRechitCluster_matchToProbeMuon[N_MAX_CSC];
   bool          cscRechitCluster_PassTimeVeto[N_MAX_CSC];
+  bool          cscRechitCluster_passME1112Veto[N_MAX_CSC];
   bool          cscRechitCluster_HLTCscCluster_Loose_Decision[N_MAX_CSC];
   bool          cscRechitCluster_HLTCscCluster_Medium_Decision[N_MAX_CSC];
   bool          cscRechitCluster_HLTCscCluster_Tight_Decision[N_MAX_CSC];

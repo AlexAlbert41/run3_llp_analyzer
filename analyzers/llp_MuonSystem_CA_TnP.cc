@@ -224,8 +224,19 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
   Long64_t nbytes = 0, nb = 0;
   clock_t start, end;
   start = clock();
-  //int maxEvents = 100000;
-  int maxEvents = fChain->GetEntries();
+  //float maxEvents = 100000;
+  
+  //variables for checking acceptance on cut-by-cut basis
+  float greater_than_one_tag = 0;
+  float two_satsifying_probe = 0;
+  float leading_muon_pt = 0;
+  float subleading_muon_pt = 0;
+  float Zmumu_events_passed = 0;
+  float total_events_passed = 0; 
+
+  bool checkProbeMuons = true; //this only counts the number of probe muons and skips rest of code!
+
+  float maxEvents = fChain->GetEntries();
   for (Long64_t jentry=0; jentry<maxEvents; jentry++) {
     //begin event
     if(jentry % 1000 == 0)
@@ -412,7 +423,12 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
         if (!tmpMuon.passLooseIso) continue;
         Leptons.push_back(tmpMuon);
       }
+      MuonSystem->numProbeMuons = Leptons.size();
       
+      if (checkProbeMuons){
+         MuonSystem->tree_->Fill();
+        continue;
+      }
       //-------------------------------
       //Electrons
       //-------------------------------
@@ -595,6 +611,17 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
       }
       MuonSystem->nLeptons++;
     }
+    
+    //compute acceptances
+    if(MuonSystem->nLeptons==2)two_satsifying_probe++;
+    //if (abs(MuonSystem->lepPdgId[0])!=13)continue; not relevant, all muons
+    //if (abs(MuonSystem->ZMass)<50)continue; removed to see whole Z-peak
+    if (abs(MuonSystem->lepPt[0])>35)leading_muon_pt++;
+    if (abs(MuonSystem->lepPt[1])>20)subleading_muon_pt++;
+    // if(MuonSystem->ZMass<120)continue; remove to see whole Z-peak
+    if (tagCount>0)greater_than_one_tag++;
+
+
     if(MuonSystem->nLeptons!=2)continue;
     if(MuonSystem->category!=2)continue;
     if (abs(MuonSystem->lepPdgId[0])!=13)continue;
@@ -625,7 +652,7 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
     TLorentzVector visible = Leptons[0].lepton;
     MuonSystem->MT = GetMT(visible,met);
   }
-      
+   Zmumu_events_passed++;   
     //cout<<"past z stuff"<<endl;
     //-----------------------------------------------
     //Select Jets
@@ -942,23 +969,28 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
           int index = 999;
           bool matchedSingleCluster = false;
           bool passTimeSingleCluster = false;
+          bool noHits_Me1112_SingleCluster = false;
           //cout<<"here"<<endl;
+
+          //flag clusters with no hits in ME11/12
+          if (tmp.nCscRechitsChamberMinus11 == 0 && tmp.nCscRechitsChamberMinus12 == 0 && tmp.nCscRechitsChamberPlus11 == 0 && tmp.nCscRechitsChamberPlus12 == 0) noHits_Me1112_SingleCluster = true;
+          MuonSystem->cscRechitCluster_passME1112Veto[MuonSystem->nCscRechitClusters] = noHits_Me1112_SingleCluster;
           for(int i = 0; i < Leptons.size(); i++)
           { 
             if (!MuonSystem->lepTag[i]) continue; //first find tagged muon
             for (int j = 0; j < Leptons.size(); j++){
               if (i==j) continue; //skip if same muon
-              if (RazorAnalyzer_TnP::deltaR(Muon_eta[i], Muon_phi[i], MuonSystem->cscRechitClusterEta[MuonSystem->nCscRechitClusters],MuonSystem->cscRechitClusterPhi[MuonSystem->nCscRechitClusters]) < 0.4 && Muon_pt[i] > MuonSystem->cscRechitClusterMuonVetoPt[MuonSystem->nCscRechitClusters] ) {
-                MuonSystem->cscRechitClusterMuonVetoPt[MuonSystem->nCscRechitClusters]  = Muon_pt[i];
-                //MuonSystem->cscRechitClusterMuonVetoE[MuonSystem->nCscRechitClusters]  = muonE[i];
-                MuonSystem->cscRechitClusterMuonVetoGlobal[MuonSystem->nCscRechitClusters]  = Muon_isGlobal[i];
-                MuonSystem->cscRechitClusterMuonVetoLooseId[MuonSystem->nCscRechitClusters]  = Muon_looseId[i];
+              if (RazorAnalyzer_TnP::deltaR(Muon_eta[j], Muon_phi[j], MuonSystem->cscRechitClusterEta[MuonSystem->nCscRechitClusters],MuonSystem->cscRechitClusterPhi[MuonSystem->nCscRechitClusters]) < 0.4 && Muon_pt[j] > MuonSystem->cscRechitClusterMuonVetoPt[MuonSystem->nCscRechitClusters] ) {
+                MuonSystem->cscRechitClusterMuonVetoPt[MuonSystem->nCscRechitClusters]  = Muon_pt[j];
+                //MuonSystem->cscRechitClusterMuonVetoE[MuonSystem->nCscRechitClusters]  = muonE[j];
+                MuonSystem->cscRechitClusterMuonVetoGlobal[MuonSystem->nCscRechitClusters]  = Muon_isGlobal[j];
+                MuonSystem->cscRechitClusterMuonVetoLooseId[MuonSystem->nCscRechitClusters]  = Muon_looseId[j];
                 matchedSingleCluster = true;
                 }
             }
           }
           MuonSystem->cscRechitCluster_matchToProbeMuon[MuonSystem->nCscRechitClusters] = matchedSingleCluster;
-        
+          
           if(!isData)
           {
             // match to gen level LLP
@@ -1016,7 +1048,7 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
           }
           MuonSystem->cscRechitCluster_PassTimeVeto[MuonSystem->nCscRechitClusters] = passTimeSingleCluster;
 
-          if (passTimeSingleCluster && matchedSingleCluster) event_cluster_matched_timed = true;
+          if (passTimeSingleCluster && matchedSingleCluster && noHits_Me1112_SingleCluster) event_cluster_matched_timed = true;
 
       //Now, compute HLT Decision manually
           //We'll use this to compute the expected HLT decision, compare with the actual trigger decision, and determine efficiency for
@@ -1062,13 +1094,13 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
               break;
           }
           
-          MuonSystem->cscRechitCluster_HLTCscCluster_Loose_Decision[MuonSystem->nCscRechitClusters] = tmp.nhits >= loose_rechit_thresh;
-          MuonSystem->cscRechitCluster_HLTCscCluster_Medium_Decision[MuonSystem->nCscRechitClusters] = tmp.nhits >= medium_rechit_thresh;
-          MuonSystem->cscRechitCluster_HLTCscCluster_Tight_Decision[MuonSystem->nCscRechitClusters] = tmp.nhits >= tight_rechit_thresh;
+          MuonSystem->cscRechitCluster_HLTCscCluster_Loose_Decision[MuonSystem->nCscRechitClusters] = (tmp.nhits >= loose_rechit_thresh && passTimeSingleCluster && noHits_Me1112_SingleCluster);
+          MuonSystem->cscRechitCluster_HLTCscCluster_Medium_Decision[MuonSystem->nCscRechitClusters] = (tmp.nhits >= medium_rechit_thresh && passTimeSingleCluster && noHits_Me1112_SingleCluster);
+          MuonSystem->cscRechitCluster_HLTCscCluster_Tight_Decision[MuonSystem->nCscRechitClusters] = (tmp.nhits >= tight_rechit_thresh && passTimeSingleCluster && noHits_Me1112_SingleCluster);
           MuonSystem->nCscRechitClusters++;
       }
       if (!event_cluster_matched_timed) continue;
-      
+      total_events_passed++; 
       // DT cluster
 
       points.clear();
@@ -1384,4 +1416,13 @@ void llp_MuonSystem_CA_TnP::Analyze(bool isData, int options, string outputfilen
         // outFile->Write();
         outFile->Close();
       }
+      cout<<"Acceptances: "<<endl;
+      cout<<"Total: "<<total_events_passed/maxEvents<<endl;
+      cout<<"Two Muons Passing Probe with Oppose Charges: "<<two_satsifying_probe/maxEvents*100<<"%"<<endl;
+      cout<<"At Least One Tag: "<<greater_than_one_tag/maxEvents*100<<"%"<<endl;
+      cout<<"Leading Muon pT>35: "<<leading_muon_pt/maxEvents*100<<"%"<<endl;
+      cout<<"Subleading Muon pT>20: "<<subleading_muon_pt/maxEvents*100<<"%"<<endl;
+      cout<<"Total Efficiency - TnP Events: "<<Zmumu_events_passed/maxEvents*100<<"%"<<endl;
+
+
 }
