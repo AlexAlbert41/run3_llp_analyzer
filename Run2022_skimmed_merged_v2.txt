@@ -1,0 +1,3 @@
+root://cmsxrootd.fnal.gov//store/user/amalbert/MDSTriggerEff/combined_skimmed_merged_v4_2022/Run2022E.root
+root://cmsxrootd.fnal.gov//store/user/amalbert/MDSTriggerEff/combined_skimmed_merged_v4_2022/Run2022F.root
+root://cmsxrootd.fnal.gov//store/user/amalbert/MDSTriggerEff/combined_skimmed_merged_v4_2022/Run2022G.root

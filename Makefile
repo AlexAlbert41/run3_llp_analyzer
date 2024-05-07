@@ -17,12 +17,13 @@ UTILSOBJ = $(UTILS:cc=o)
 EXECUTABLES = NormalizeNtuple SkimNtuple $(RUNNERS)
 #EXECUTABLES = $(RUNNERS)
 HELPERSCRIPT = python/MakeAnalyzerCode.py
-HELPERSCRIPT_TnP = python/MakeAnalyzerCode_TnP.py
+HELPERSCRIPT_TnP = python/MakeAnalyzerCode_trigEff.py
+HELPERSCRIPT_trigEff = python/MakeAnalyzerCode_trigEff.py
 
 
-.PHONY: clean all lxplus copy_runners copy_runners_TnP
+.PHONY: clean all lxplus copy_runners copy_runners_TnP copy_runners_TrigEff
 
-all: copy_runners copy_runners_TnP $(EXECUTABLES)
+all: copy_runners copy_runners_TnP copy_runners_TrigEff $(EXECUTABLES)
 
 lxplus: all
 
@@ -36,23 +37,32 @@ clean:
 #copy_runners:
 #		@for d in $(subst Run,,$(notdir $(basename $(RUNNERSCC)))); do ( if [ ! -f "src/Run"$$d".cc" ]; then echo $$d" file does not exists, copying"; $(HELPERSCRIPT) $$d; fi ) ; done
 
+
 copy_runners:
 		@for d in $(subst Run,,$(notdir $(basename $(RUNNERSCC)))); do \
-		    if [ $$d != "llp_MuonSystem_CA_TnP" ]; then \
-			if [ ! -f "src/Run"$$d".cc" ]; then \
-			    echo $$d" file does not exists, copying"; \
-			    echo "Running python/MakeAnalyzerCode.py $$d"; \
-			    $(HELPERSCRIPT) $$d; \
+			if [ $$d != "llp_MuonSystem_CA_TnP" ] && [ $$d != "llp_MuonSystem_CA_TrigEff" ]; then \
+				if [ ! -f "src/Run"$$d".cc" ]; then \
+					echo $$d "file does not exist, copying"; \
+					echo "Running python/MakeAnalyzerCode.py $$d"; \
+					$(HELPERSCRIPT) $$d; \
+				fi; \
 			fi; \
-		    fi; \
 		done
-        
+
 copy_runners_TnP:		
 		d="llp_MuonSystem_CA_TnP"; \
 		if [ ! -f "src/Run"$$d".cc" ]; then \
 		    echo $$d" file does not exists, copying"; \
-				echo "Running python/MakeAnalyzerCode_TnP.py $$d"; \
-		    $(HELPERSCRIPT_TnP) $$d; \
+			echo "Running python/MakeAnalyzerCode_trigEff.py $$d"; \
+			$(HELPERSCRIPT_TnP) $$d; \
+		fi
+
+copy_runners_TrigEff:		
+		d="llp_MuonSystem_CA_TrigEff"; \
+		if [ ! -f "src/Run"$$d".cc" ]; then \
+		    echo $$d" file does not exists, copying"; \
+				echo "Running python/MakeAnalyzerCode_trigEff.py $$d"; \
+		    $(HELPERSCRIPT_trigEff) $$d; \
 		fi
 
 $(INCLUDEDIR)/rootdict.cc:
@@ -75,6 +85,14 @@ $(SRCDIR)/llp_event_TnP.o: $(SRCDIR)/llp_event_TnP.C $(INCLUDEDIR)/llp_event_TnP
 $(SRCDIR)/RazorAnalyzer_TnP.o: $(SRCDIR)/llp_event_TnP.o $(SRCDIR)/RazorAnalyzer_TnP.cc
 	$(CXX) $(SRCDIR)/RazorAnalyzer_TnP.cc $(CXXFLAGS) -I$(INCLUDEDIR) -c $(LDFLAGS) $(LIBS) -o $@ $(CXX14FLAGS)
 
+#added by me
+$(SRCDIR)/llp_event_trigEff.o: $(SRCDIR)/llp_event_trigEff.C $(INCLUDEDIR)/llp_event_trigEff.h
+	$(CXX) $(SRCDIR)/llp_event_trigEff.C $(CXXFLAGS) -I$(INCLUDEDIR) -c $(LDFLAGS) $(LIBS) -o $@ $(CXX14FLAGS)
+
+#added by me
+$(SRCDIR)/RazorAnalyzer_trigEff.o: $(SRCDIR)/llp_event_trigEff.o $(SRCDIR)/RazorAnalyzer_trigEff.cc
+	$(CXX) $(SRCDIR)/RazorAnalyzer_trigEff.cc $(CXXFLAGS) -I$(INCLUDEDIR) -c $(LDFLAGS) $(LIBS) -o $@ $(CXX14FLAGS)
+
 #$(SRCDIR)/llp_event_skim_merge.o: $(SRCDIR)/llp_event_skim_merge.C $(INCLUDEDIR)/llp_event_skim_merge.h
 #	$(CXX) $(SRCDIR)/llp_event_skim_merge.C $(CXXFLAGS) -I$(INCLUDEDIR) -c $(LDFLAGS) $(LIBS) -o $@ $(CXX14FLAGS)
 
@@ -93,9 +111,11 @@ $(BINDIR)/Runllp_MuonSystem: $(SRCDIR)/llp_event.o $(SRCDIR)/RazorAnalyzer.o $(U
 $(BINDIR)/Runllp_MuonSystem_CA: $(SRCDIR)/llp_event.o $(SRCDIR)/RazorAnalyzer.o $(UTILSOBJ) $(ANADIR)/llp_MuonSystem_CA.o $(SRCDIR)/Runllp_MuonSystem_CA.cc
 	$(CXX) $^ $(CXXFLAGS) -I$(INCLUDEDIR) -I$(ANADIR) $(LDFLAGS) $(LIBS) -o $@ $(CXX14FLAGS)
 
-$(BINDIR)/Runllp_MuonSystem_CA_TnP: $(SRCDIR)/llp_event_TnP.o $(SRCDIR)/RazorAnalyzer_TnP.o $(UTILSOBJ) $(ANADIR)/llp_MuonSystem_CA_TnP.o $(SRCDIR)/Runllp_MuonSystem_CA_TnP.cc
+$(BINDIR)/Runllp_MuonSystem_CA_TnP: $(SRCDIR)/llp_event_trigEff.o $(SRCDIR)/RazorAnalyzer_trigEff.o $(UTILSOBJ) $(ANADIR)/llp_MuonSystem_CA_TnP.o $(SRCDIR)/Runllp_MuonSystem_CA_TnP.cc
 	$(CXX) $^ $(CXXFLAGS) -I$(INCLUDEDIR) -I$(ANADIR) $(LDFLAGS) $(LIBS) -o $@ $(CXX14FLAGS)
 
+$(BINDIR)/Runllp_MuonSystem_CA_TrigEff: $(SRCDIR)/llp_event_trigEff.o $(SRCDIR)/RazorAnalyzer_trigEff.o $(UTILSOBJ) $(ANADIR)/llp_MuonSystem_CA_TrigEff.o $(SRCDIR)/Runllp_MuonSystem_CA_TrigEff.cc
+	$(CXX) $^ $(CXXFLAGS) -I$(INCLUDEDIR) -I$(ANADIR) $(LDFLAGS) $(LIBS) -o $@ $(CXX14FLAGS)
 
 NormalizeNtuple: $(SRCDIR)/SimpleTable.o $(SRCDIR)/NormalizeNtuple.cc $(INCLUDEDIR)/rootdict.o
 	$(CXX) $^ $(CXXFLAGS) -I$(INCLUDEDIR) $(LDFLAGS) $(LIBS) -o $@ $(CXX14FLAGS)

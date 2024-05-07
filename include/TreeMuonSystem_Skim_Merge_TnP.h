@@ -317,7 +317,10 @@ public:
   bool HLT_CscCluster_Loose;
   bool HLT_CscCluster_Medium;
   bool HLT_CscCluster_Tight;
-
+  bool HLT_IsoMu20;
+  bool HLT_IsoMu24;
+  bool L1_SingleMuShower_Nominal;
+  bool L1_SingleMuShower_Tight;
 
 
 

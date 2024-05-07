@@ -284,6 +284,10 @@ void TreeMuonSystem_Skim_Merge_TnP::InitVariables()
   HLT_CscCluster_Loose = false;
   HLT_CscCluster_Medium = false;
   HLT_CscCluster_Tight = false;
+  HLT_IsoMu20 = false;
+  HLT_IsoMu24 = false;
+  L1_SingleMuShower_Nominal = false;
+  L1_SingleMuShower_Tight = false;
 };
 
 void TreeMuonSystem_Skim_Merge_TnP::InitTree()
@@ -606,7 +610,10 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
   tree_->SetBranchAddress("HLT_CscCluster_Loose",   &HLT_CscCluster_Loose);
   tree_->SetBranchAddress("HLT_CscCluster_Medium",   &HLT_CscCluster_Medium);
   tree_->SetBranchAddress("HLT_CscCluster_Tight",   &HLT_CscCluster_Tight);
-
+  tree_->SetBranchAddress("HLT_IsoMu20",   &HLT_IsoMu20);
+  tree_->SetBranchAddress("HLT_IsoMu24",   &HLT_IsoMu24);
+  tree_->SetBranchAddress("L1_SingleMuShower_Nominal",   &L1_SingleMuShower_Nominal);
+  tree_->SetBranchAddress("L1_SingleMuShower_Tight",   &L1_SingleMuShower_Tight);
 };
 
 void TreeMuonSystem_Skim_Merge_TnP::LoadTree(const char* file)
@@ -930,4 +937,8 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
   tree_->Branch("HLT_CscCluster_Loose", &HLT_CscCluster_Loose, "HLT_CscCluster_Loose/O"); //hardcoded
   tree_->Branch("HLT_CscCluster_Medium", &HLT_CscCluster_Medium, "HLT_CscCluster_Medium/O"); //hardcoded
   tree_->Branch("HLT_CscCluster_Tight", &HLT_CscCluster_Tight, "HLT_CscCluster_Tight/O"); //hardcoded
+  tree_->Branch("HLT_IsoMu20",   &HLT_IsoMu20, "HLT_IsoMu20/O");
+  tree_->Branch("HLT_IsoMu24",   &HLT_IsoMu24, "HLT_IsoMu24/O");
+  tree_->Branch("L1_SingleMuShower_Nominal",   &L1_SingleMuShower_Nominal, "L1_SingleMuShower_Nominal/O");
+  tree_->Branch("L1_SingleMuShower_Tight",   &L1_SingleMuShower_Tight, "L1_SingleMuShower_Tight/O");
 };
