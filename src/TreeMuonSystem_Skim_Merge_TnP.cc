@@ -257,7 +257,7 @@ void TreeMuonSystem_Skim_Merge_TnP::InitVariables()
     lepPassTightIso[i] = false;
     lepPassVTightIso[i] = false;
     lepPassVTightIso[i] = false;
-
+    lepPassProbe[i] = false;
 
   }
   //Z-candidate - added from https://github.com/cms-lpc-llp/llp_analyzer/blob/master/src/LiteTreeMuonSystem.cc
@@ -521,12 +521,19 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
   tree_->SetBranchAddress("cscRechitClusterMet_dPhi",             cscRechitClusterMet_dPhi);
 
   tree_->SetBranchAddress("cscRechitCluster_matchToProbeMuon",             cscRechitCluster_matchToProbeMuon);
+  tree_->SetBranchAddress("cscRechitCluster_matchToNotProbeMuon",             cscRechitCluster_matchToNotProbeMuon);
+  tree_->SetBranchAddress("cscRechitCluster_matchToJet",             cscRechitCluster_matchToJet);
+   tree_->SetBranchAddress("cscRechitCluster_notMatched",             cscRechitCluster_notMatched);
   tree_->SetBranchAddress("cscRechitCluster_passME1112Veto",             cscRechitCluster_passME1112Veto);
   tree_->SetBranchAddress("cscRechitCluster_PassTimeVeto",            cscRechitCluster_PassTimeVeto);
 
   tree_->SetBranchAddress("cscRechitCluster_HLTCscCluster_Loose_Decision",             cscRechitCluster_HLTCscCluster_Loose_Decision);
   tree_->SetBranchAddress("cscRechitCluster_HLTCscCluster_Medium_Decision",             cscRechitCluster_HLTCscCluster_Medium_Decision);
   tree_->SetBranchAddress("cscRechitCluster_HLTCscCluster_Tight_Decision",             cscRechitCluster_HLTCscCluster_Tight_Decision);
+  tree_->SetBranchAddress("cscRechitCluster_match_gParticle_id",             cscRechitCluster_match_gParticle_id);
+  tree_->SetBranchAddress("cscRechitCluster_match_gParticle_mother_id",             cscRechitCluster_match_gParticle_mother_id);
+  tree_->SetBranchAddress("cscRechitCluster_match_gParticle_cluster_deltaR",             cscRechitCluster_match_gParticle_cluster_deltaR);
+  tree_->SetBranchAddress("cscRechitCluster_match_gParticle_pt",             cscRechitCluster_match_gParticle_pt);
 
   tree_->SetBranchAddress("nGLLP",    &nGLLP);
 
@@ -585,6 +592,8 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
   tree_->SetBranchAddress("lepFromZ", lepFromZ);
 
   tree_->SetBranchAddress("lepPassVetoId", lepPassVetoId);
+
+  tree_->SetBranchAddress("lepPassProbe", lepPassProbe);
   
 
   //Z-candidate (also newly added)
@@ -759,11 +768,18 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
     tree_->Branch("cscRechitClusterNRechitChamberMinus42",             cscRechitClusterNRechitChamberMinus42,             "cscRechitClusterNRechitChamberMinus42[nCscRechitClusters]/I");
     tree_->Branch("cscRechitClusterMet_dPhi",             cscRechitClusterMet_dPhi,             "cscRechitClusterMet_dPhi[nCscRechitClusters]/F");
     tree_->Branch("cscRechitCluster_matchToProbeMuon",             cscRechitCluster_matchToProbeMuon,            "cscRechitCluster_matchToProbeMuon[nCscRechitClusters]/O");
+    tree_->Branch("cscRechitCluster_matchToNotProbeMuon",             cscRechitCluster_matchToNotProbeMuon,            "cscRechitCluster_matchToNotProbeMuon[nCscRechitClusters]/O");
+    tree_->Branch("cscRechitCluster_matchToJet",             cscRechitCluster_matchToJet,            "cscRechitCluster_matchToJet[nCscRechitClusters]/O");
+    tree_->Branch("cscRechitCluster_notMatched",             cscRechitCluster_notMatched,            "cscRechitCluster_notMatched[nCscRechitClusters]/O");
     tree_->Branch("cscRechitCluster_passME1112Veto",             cscRechitCluster_passME1112Veto,            "cscRechitCluster_passME1112Veto[nCscRechitClusters]/O");
     tree_->Branch("cscRechitCluster_PassTimeVeto",            cscRechitCluster_PassTimeVeto,           "cscRechitCluster_PassTimeVeto[nCscRechitClusters]/O");
     tree_->Branch("cscRechitCluster_HLTCscCluster_Loose_Decision",             cscRechitCluster_HLTCscCluster_Loose_Decision,            "cscRechitCluster_HLTCscCluster_Loose_Decision[nCscRechitClusters]/O");
     tree_->Branch("cscRechitCluster_HLTCscCluster_Medium_Decision",             cscRechitCluster_HLTCscCluster_Medium_Decision,            "cscRechitCluster_HLTCscCluster_Medium_Decision[nCscRechitClusters]/O");
     tree_->Branch("cscRechitCluster_HLTCscCluster_Tight_Decision",             cscRechitCluster_HLTCscCluster_Tight_Decision,            "cscRechitCluster_HLTCscCluster_Tight_Decision[nCscRechitClusters]/O");
+    tree_->Branch("cscRechitCluster_match_gParticle_id",             cscRechitCluster_match_gParticle_id,           "cscRechitCluster_match_gParticle_id[nCscRechitClusters]/I");
+    tree_->Branch("cscRechitCluster_match_gParticle_mother_id",             cscRechitCluster_match_gParticle_mother_id,          "cscRechitCluster_match_gParticle_mother_id[nCscRechitClusters]/I");
+    tree_->Branch("cscRechitCluster_match_gParticle_cluster_deltaR",             cscRechitCluster_match_gParticle_cluster_deltaR,         "cscRechitCluster_match_gParticle_cluster_deltaR[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitCluster_match_gParticle_pt",             cscRechitCluster_match_gParticle_pt,          "cscRechitCluster_match_gParticle_pt[nCscRechitClusters]/F");
 
     tree_->Branch("nDtRechitClusters",             &nDtRechitClusters, "nDtRechitClusters/I");
 
@@ -903,6 +919,7 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
   tree_->Branch("lepTightIsoMCEfficiency", lepTightIsoMCEfficiency, "lepTightIsoMCEfficiency[nLeptons]/F");
   tree_->Branch("lepLooseIsoMCEfficiency", lepLooseIsoMCEfficiency, "lepLooseIsoMCEfficiency[nLeptons]/F");
   tree_->Branch("lepTag", lepTag, "lepTag[nLeptons]/O");
+  tree_->Branch("lepPassProbe", lepPassProbe, "lepPassProbe[nLeptons]/O");
 
 
 

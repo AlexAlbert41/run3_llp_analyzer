@@ -1,0 +1,1 @@
+root://cmsxrootd.fnal.gov//store/user/amalbert/MDSTriggerEff/merge_MCSummer23_DY50to120_postBPix_hadded/MCSummer23_DY50to120_postBPix_31900pb_weighted.root

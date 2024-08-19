@@ -229,11 +229,19 @@ public:
   int           cscRechitClusterNRechitChamberMinus42[N_MAX_CSC];
   float         cscRechitClusterMet_dPhi[N_MAX_CSC];
   bool          cscRechitCluster_matchToProbeMuon[N_MAX_CSC];
+  bool          cscRechitCluster_matchToNotProbeMuon[N_MAX_CSC];
+  bool          cscRechitCluster_matchToJet[N_MAX_CSC];
+  bool          cscRechitCluster_notMatched[N_MAX_CSC];
   bool          cscRechitCluster_PassTimeVeto[N_MAX_CSC];
   bool          cscRechitCluster_passME1112Veto[N_MAX_CSC];
   bool          cscRechitCluster_HLTCscCluster_Loose_Decision[N_MAX_CSC];
   bool          cscRechitCluster_HLTCscCluster_Medium_Decision[N_MAX_CSC];
   bool          cscRechitCluster_HLTCscCluster_Tight_Decision[N_MAX_CSC];
+  int           cscRechitCluster_match_gParticle_id[N_MAX_CSC];
+  int           cscRechitCluster_match_gParticle_mother_id[N_MAX_CSC];
+  float         cscRechitCluster_match_gParticle_cluster_deltaR[N_MAX_CSC];
+  float         cscRechitCluster_match_gParticle_pt[N_MAX_CSC];
+
 
   //gLLP
   int nGLLP;
@@ -293,6 +301,7 @@ public:
   bool lepFromZ[N_MAX_LEPTONS];
   bool lepPassId[N_MAX_LEPTONS];
   float lepOverallSF;
+  bool  lepPassProbe[N_MAX_LEPTONS];
 
   //Z-candidate (added from https://github.com/cms-lpc-llp/llp_analyzer/blob/master/include/LiteTreeMuonSystem.h)
   float MT;

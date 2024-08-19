@@ -48,6 +48,10 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "llp.C": "cpp",
-        "llp_event_TnP.C": "cpp"
+        "llp_event_TnP.C": "cpp",
+        "llp_event_trigEff_MC.C": "cpp",
+        "llp_event_trigEff.C": "cpp",
+        "llp_event_trigEff_fromData.C": "cpp",
+        "llp_event_trigEff_fromData_081424.C": "cpp"
     }
 }

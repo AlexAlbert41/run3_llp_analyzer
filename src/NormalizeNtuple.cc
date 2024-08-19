@@ -41,6 +41,7 @@ double getNormalizationWeight(string filename, string datasetName, double intLum
 
   TH1F *hist = (TH1F*) file->Get("NEvents");
   //TH1F *hist = (TH1F*) file->Get("NEvents_genweight");
+  /*
   if (!hist) {
     cout << "Could not find histogram NEvents"
          << " in file " << filename << endl;
@@ -49,8 +50,8 @@ double getNormalizationWeight(string filename, string datasetName, double intLum
     return 0;
   }
   double NEvents = hist->GetBinContent(1);
-  cout << "Original events in the sample: " << NEvents << endl;
-  //NEvents = 2000000;
+  */
+  double NEvents = 2859999.0 * 2265.28;
   //Get CrossSection
   char* cmsswPath;
   cmsswPath = getenv("CMSSW_BASE");

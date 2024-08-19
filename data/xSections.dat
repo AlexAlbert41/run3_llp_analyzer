@@ -579,3 +579,6 @@ GJets_HT_100To200_13TeV  9235
 GJets_HT_200To400_13TeV  2298
 GJets_HT_400To600_13TeV 277.6
 GJets_HT_600ToInf_13TeV 93.47
+
+#added by Alex for DY MC
+DYto2Mu_MLL-50to120_TuneCP5_13p6TeV_powheg-pythia8 2219.0
