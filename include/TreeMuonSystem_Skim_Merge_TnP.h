@@ -54,7 +54,7 @@ public:
   float pileupWeight;
 
   float met, metPhi;
-  bool Flag_HBHENoiseFilter, Flag_HBHEIsoNoiseFilter, Flag_BadPFMuonFilter, Flag_globalSuperTightHalo2016Filter,
+  bool Flag_HBHENoiseFilter, Flag_HBHEIsoNoiseFilter, Flag_BadPFMuonFilter, Flag_BadPFMuonDzFilter, Flag_hfNoisyHitsFilter, Flag_globalSuperTightHalo2016Filter,
   Flag_CSCTightHaloFilter, Flag_BadChargedCandidateFilter, Flag_eeBadScFilter, Flag_goodVertices, Flag_ecalBadCalibFilter, Flag_all;
   int mH, mX, ctau;
 
@@ -230,7 +230,9 @@ public:
   float         cscRechitClusterMet_dPhi[N_MAX_CSC];
   bool          cscRechitCluster_matchToProbeMuon[N_MAX_CSC];
   bool          cscRechitCluster_matchToNotProbeMuon[N_MAX_CSC];
-  bool          cscRechitCluster_matchToJet[N_MAX_CSC];
+  bool          cscRechitCluster_matchToProbeAndJet[N_MAX_CSC];
+  bool          cscRechitCluster_matchToHighPtJet[N_MAX_CSC];
+  bool          cscRechitCluster_matchToLowPtJet[N_MAX_CSC];
   bool          cscRechitCluster_notMatched[N_MAX_CSC];
   bool          cscRechitCluster_PassTimeVeto[N_MAX_CSC];
   bool          cscRechitCluster_passME1112Veto[N_MAX_CSC];

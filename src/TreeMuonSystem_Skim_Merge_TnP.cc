@@ -20,8 +20,8 @@ void TreeMuonSystem_Skim_Merge_TnP::InitVariables()
   pileupWeight = 0;
   weight=-1.0;rho=-1;
   met=-1; metPhi=-1;
-  Flag_HBHENoiseFilter = false; Flag_HBHEIsoNoiseFilter = false; Flag_BadPFMuonFilter = false; Flag_CSCTightHaloFilter = false; Flag_goodVertices = false;
-  Flag_ecalBadCalibFilter = false; Flag_all = false; Flag_globalSuperTightHalo2016Filter = false; Flag_BadChargedCandidateFilter = false; Flag_eeBadScFilter = false;
+  Flag_HBHENoiseFilter = false; Flag_HBHEIsoNoiseFilter = false; Flag_BadPFMuonFilter = false; Flag_BadPFMuonDzFilter = false; Flag_CSCTightHaloFilter = false; Flag_goodVertices = false;
+  Flag_ecalBadCalibFilter = false; Flag_all = false; Flag_globalSuperTightHalo2016Filter = false; Flag_BadChargedCandidateFilter = false; Flag_eeBadScFilter = false; Flag_hfNoisyHitsFilter = false;
 
   numProbeMuons = 0;
   
@@ -314,9 +314,11 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
   tree_->SetBranchAddress("Flag_HBHENoiseFilter",      &Flag_HBHENoiseFilter);
   tree_->SetBranchAddress("Flag_HBHEIsoNoiseFilter",      &Flag_HBHEIsoNoiseFilter);
   tree_->SetBranchAddress("Flag_BadPFMuonFilter",      &Flag_BadPFMuonFilter);
+  tree_->SetBranchAddress("Flag_BadPFMuonDzFilter",      &Flag_BadPFMuonDzFilter);
   tree_->SetBranchAddress("Flag_CSCTightHaloFilter",      &Flag_CSCTightHaloFilter);
   tree_->SetBranchAddress("Flag_BadChargedCandidateFilter",      &Flag_BadChargedCandidateFilter);
   tree_->SetBranchAddress("Flag_eeBadScFilter",      &Flag_eeBadScFilter);
+  tree_->SetBranchAddress("Flag_hfNoisyHitsFilter",      &Flag_hfNoisyHitsFilter);
   tree_->SetBranchAddress("Flag_globalSuperTightHalo2016Filter",      &Flag_globalSuperTightHalo2016Filter);
   tree_->SetBranchAddress("Flag_goodVertices",      &Flag_goodVertices);
   tree_->SetBranchAddress("Flag_ecalBadCalibFilter",      &Flag_ecalBadCalibFilter);
@@ -522,7 +524,9 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
 
   tree_->SetBranchAddress("cscRechitCluster_matchToProbeMuon",             cscRechitCluster_matchToProbeMuon);
   tree_->SetBranchAddress("cscRechitCluster_matchToNotProbeMuon",             cscRechitCluster_matchToNotProbeMuon);
-  tree_->SetBranchAddress("cscRechitCluster_matchToJet",             cscRechitCluster_matchToJet);
+  tree_->SetBranchAddress("cscRechitCluster_matchToProbeAndJet",             cscRechitCluster_matchToProbeAndJet);
+  tree_->SetBranchAddress("cscRechitCluster_matchToHighPtJet",             cscRechitCluster_matchToHighPtJet);
+  tree_->SetBranchAddress("cscRechitCluster_matchToLowPtJet",             cscRechitCluster_matchToLowPtJet);
    tree_->SetBranchAddress("cscRechitCluster_notMatched",             cscRechitCluster_notMatched);
   tree_->SetBranchAddress("cscRechitCluster_passME1112Veto",             cscRechitCluster_passME1112Veto);
   tree_->SetBranchAddress("cscRechitCluster_PassTimeVeto",            cscRechitCluster_PassTimeVeto);
@@ -657,6 +661,7 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
 
   tree_->Branch("Flag_HBHENoiseFilter",      &Flag_HBHENoiseFilter,     "Flag_HBHENoiseFilter/O");
   tree_->Branch("Flag_BadPFMuonFilter",      &Flag_BadPFMuonFilter,     "Flag_BadPFMuonFilter/O");
+  tree_->Branch("Flag_BadPFMuonDzFilter",      &Flag_BadPFMuonDzFilter,     "Flag_BadPFMuonDzFilter/O");
   tree_->Branch("Flag_HBHEIsoNoiseFilter",      &Flag_HBHEIsoNoiseFilter,     "Flag_HBHEIsoNoiseFilter/O");
   tree_->Branch("Flag_CSCTightHaloFilter",      &Flag_CSCTightHaloFilter,     "Flag_CSCTightHaloFilter/O");
   tree_->Branch("Flag_globalSuperTightHalo2016Filter",      &Flag_globalSuperTightHalo2016Filter,     "Flag_globalSuperTightHalo2016Filter/O");
@@ -664,6 +669,7 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
   tree_->Branch("Flag_ecalBadCalibFilter",      &Flag_ecalBadCalibFilter,     "Flag_ecalBadCalibFilter/O");
   tree_->Branch("Flag_BadChargedCandidateFilter",      &Flag_BadChargedCandidateFilter,     "Flag_BadChargedCandidateFilter/O");
   tree_->Branch("Flag_eeBadScFilter",      &Flag_eeBadScFilter,     "Flag_eeBadScFilter/O");
+  tree_->Branch("Flag_hfNoisyHitsFilter",      &Flag_hfNoisyHitsFilter,     "Flag_hfNoisyHitsFilter/O");
   tree_->Branch("Flag_all",      &Flag_all,     "Flag_all/O");
 
   tree_->Branch("Flag2_HBHENoiseFilter",      &Flag2_HBHENoiseFilter,     "Flag2_HBHENoiseFilter/O");
@@ -768,8 +774,10 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
     tree_->Branch("cscRechitClusterNRechitChamberMinus42",             cscRechitClusterNRechitChamberMinus42,             "cscRechitClusterNRechitChamberMinus42[nCscRechitClusters]/I");
     tree_->Branch("cscRechitClusterMet_dPhi",             cscRechitClusterMet_dPhi,             "cscRechitClusterMet_dPhi[nCscRechitClusters]/F");
     tree_->Branch("cscRechitCluster_matchToProbeMuon",             cscRechitCluster_matchToProbeMuon,            "cscRechitCluster_matchToProbeMuon[nCscRechitClusters]/O");
+    tree_->Branch("cscRechitCluster_matchToProbeAndJet",             cscRechitCluster_matchToProbeAndJet,            "cscRechitCluster_matchToProbeAndJet[nCscRechitClusters]/O");
     tree_->Branch("cscRechitCluster_matchToNotProbeMuon",             cscRechitCluster_matchToNotProbeMuon,            "cscRechitCluster_matchToNotProbeMuon[nCscRechitClusters]/O");
-    tree_->Branch("cscRechitCluster_matchToJet",             cscRechitCluster_matchToJet,            "cscRechitCluster_matchToJet[nCscRechitClusters]/O");
+    tree_->Branch("cscRechitCluster_matchToHighPtJet",             cscRechitCluster_matchToHighPtJet,            "cscRechitCluster_matchToHighPtJet[nCscRechitClusters]/O");
+    tree_->Branch("cscRechitCluster_matchToLowPtJet",             cscRechitCluster_matchToLowPtJet,            "cscRechitCluster_matchToLowPtJet[nCscRechitClusters]/O");
     tree_->Branch("cscRechitCluster_notMatched",             cscRechitCluster_notMatched,            "cscRechitCluster_notMatched[nCscRechitClusters]/O");
     tree_->Branch("cscRechitCluster_passME1112Veto",             cscRechitCluster_passME1112Veto,            "cscRechitCluster_passME1112Veto[nCscRechitClusters]/O");
     tree_->Branch("cscRechitCluster_PassTimeVeto",            cscRechitCluster_PassTimeVeto,           "cscRechitCluster_PassTimeVeto[nCscRechitClusters]/O");

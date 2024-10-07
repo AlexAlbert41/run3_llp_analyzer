@@ -76,6 +76,7 @@ struct jets
   float chargedHadronEnergyFraction;
   float neutralHadronEnergyFraction;
   float muonEnergyFraction;
+  float highPtJet; //added by Alex
 
 };
 
@@ -226,7 +227,7 @@ void llp_MuonSystem_CA_TrigEff::Analyze(bool isData, int options, string outputf
   Long64_t nbytes = 0, nb = 0;
   clock_t start, end;
   start = clock();
-  //float maxEvents = 6000000;
+  //float maxEvents = 505000;
   
   //variables for checking acceptance on cut-by-cut basis
   float greater_than_one_tag = 0;
@@ -240,7 +241,7 @@ void llp_MuonSystem_CA_TrigEff::Analyze(bool isData, int options, string outputf
 
   
   float maxEvents = fChain->GetEntries();
-  for (Long64_t jentry=6000000; jentry<maxEvents; jentry++) {
+  for (Long64_t jentry=0; jentry<maxEvents; jentry++) {
     //begin event
     if(jentry % 1000 == 0)
     {
@@ -250,9 +251,11 @@ void llp_MuonSystem_CA_TrigEff::Analyze(bool isData, int options, string outputf
       cout << "Time taken by program is : " << time_taken << endl;
       start = clock();
     }
+    /*
     if ((jentry>6086000 && jentry<6087000)||(jentry>6743000 && jentry<6744000)||(jentry>4044000 && jentry<4045000)||(jentry>5008000 && jentry<5009000)||(jentry>7767000 && jentry<7768000) || (jentry>8023000 && jentry<8024000)){
 	    continue;
-    }    
+    }
+    */    
     // if (jentry<4000)continue;
     // cout<<jentry<<endl;
     //cout<<"About to load tree"<<endl;
@@ -261,8 +264,11 @@ void llp_MuonSystem_CA_TrigEff::Analyze(bool isData, int options, string outputf
     if (ientry < 0) break;
     //GetEntry(ientry);
     //cout<<"Getting entry from fChain"<<endl;
-    //nb = fChain->GetEntry(jentry); nbytes += nb;
+    nb = fChain->GetEntry(jentry); nbytes += nb;
+    //cout<<nbytes<<endl;
+    //cout<<"Trying to Get Entry"<<endl;
     fChain->GetEntry(jentry);
+    //cout<<"Got Entry"<<endl;
     //cout<<"RunNum: "<<runNum<<endl;
     //cout<<"eventNum: "<<eventNum<<endl;
     //cout<<"Got entry from fChain, about to check HLT_IsoMu24"<<endl;
@@ -270,7 +276,9 @@ void llp_MuonSystem_CA_TrigEff::Analyze(bool isData, int options, string outputf
     //cout<<"Passed HLT_IsoMu24, about to init variables in MuonSystem"<<endl;
     //cout<<"Past Cut"<<endl;
     //fill normalization histogram
+    //cout<<"About to Init Variables"<<endl;
     MuonSystem->InitVariables();
+    //cout<<"Inited Variables"<<endl;
     // std::cout << "deb1 " << jentry << std::endl;
     //cout<<"Initialized Variables in Muon System"<<endl;
 
@@ -333,6 +341,21 @@ void llp_MuonSystem_CA_TrigEff::Analyze(bool isData, int options, string outputf
     MuonSystem->runNum = run;
     MuonSystem->lumiSec = luminosityBlock;
     MuonSystem->evtNum = event;
+
+    //check event flags
+    MuonSystem->Flag_HBHENoiseFilter = Flag_HBHENoiseFilter;
+    MuonSystem->Flag_globalSuperTightHalo2016Filter = Flag_globalSuperTightHalo2016Filter;
+    MuonSystem->Flag2_EcalDeadCellTriggerPrimitiveFilter = Flag_EcalDeadCellTriggerPrimitiveFilter;
+    MuonSystem->Flag_BadPFMuonFilter = Flag_BadPFMuonFilter;
+    MuonSystem->Flag_BadPFMuonDzFilter = Flag_BadPFMuonDzFilter;
+    MuonSystem->Flag_hfNoisyHitsFilter = Flag_hfNoisyHitsFilter;
+    MuonSystem->Flag_eeBadScFilter = Flag_eeBadScFilter;
+    MuonSystem->Flag_ecalBadCalibFilter = Flag_ecalBadCalibFilter;
+
+    MuonSystem->Flag_all = (Flag_HBHENoiseFilter && Flag_globalSuperTightHalo2016Filter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter && Flag_BadPFMuonDzFilter && Flag_hfNoisyHitsFilter && Flag_eeBadScFilter && Flag_ecalBadCalibFilter);
+
+
+
 
     /*commented out for new make class
     if (!isData)
@@ -720,11 +743,12 @@ void llp_MuonSystem_CA_TrigEff::Analyze(bool isData, int options, string outputf
     //cout<<"nJet: "<<nJet<<endl;
     for(int i = 0; i < nJet; i++)
     {
+      
       if (fabs(Jet_eta[i]) >= 3.0)continue;
       if (i<4){
         //cout<<Jet_pt[i]<<endl;
       }
-      if( Jet_pt[i] < 30 ) continue; //changed from 20 to 30
+      //if( Jet_pt[i] < 30 ) continue; //changed from 20 to 30
       //cout<<"Found Jet with pT > 30"<<endl;
       //if (!jetPassIDLoose[i]) continue;
       //------------------------------------------------------------
@@ -742,7 +766,7 @@ void llp_MuonSystem_CA_TrigEff::Analyze(bool isData, int options, string outputf
         double thisDR = RazorAnalyzer_trigEff::deltaR(Jet_eta[i],Jet_phi[i],lep.lepton.Eta(),lep.lepton.Phi());
         if(deltaR < 0 || thisDR < deltaR) deltaR = thisDR;
       }
-      if(deltaR > 0 && deltaR < 0.4) continue; //jet matches a selected lepton
+      //if(deltaR > 0 && deltaR < 0.4) continue; //jet matches a selected lepton
 
 
       TLorentzVector thisJet = makeTLorentzVector( Jet_pt[i], Jet_eta[i], Jet_phi[i], Jet_mass[i] ); //was energy before, not sure about mass
@@ -751,7 +775,7 @@ void llp_MuonSystem_CA_TrigEff::Analyze(bool isData, int options, string outputf
       tmpJet.jet    = thisJet;
       //tmpJet.passId = jetPassIDTight[i];
       tmpJet.passId = true; //not sure of analog in Nano, changed to true for now
-      
+      tmpJet.highPtJet = Jet_pt[i] >= 30;
       Jets.push_back(tmpJet);
 
       }
@@ -1042,7 +1066,8 @@ void llp_MuonSystem_CA_TrigEff::Analyze(bool isData, int options, string outputf
           int index = 999;
           bool matchedSingleCluster = false;
           bool matchedSingleCluster_notProbe = false;
-          bool matchedSingleClusterJet = false;
+          bool matchedSingleClusterHighPtJet = false;
+          bool matchedSingleClusterLowPtJet = false;
           bool passTimeSingleCluster = false;
           bool noHits_Me1112_SingleCluster = false;
           //cout<<"here"<<endl;
@@ -1086,26 +1111,33 @@ void llp_MuonSystem_CA_TrigEff::Analyze(bool isData, int options, string outputf
             }
           }
             MuonSystem->cscRechitCluster_matchToNotProbeMuon[MuonSystem->nCscRechitClusters] = matchedSingleCluster_notProbe;
-          if (!(matchedSingleCluster||matchedSingleCluster_notProbe)) {
+          MuonSystem->cscRechitCluster_matchToProbeAndJet[MuonSystem->nCscRechitClusters] = false;
           float minDeltaRJet = 100000; float currentDeltaRJet = 0;
-          for(int i = 0; i < Jets.size(); i++)
+          for(auto &tmp : Jets )
           { 
             //if (!MuonSystem->lepTag[i]) continue; //first find tagged muon
             //for (int j = 0; j < Leptons.size(); j++){
               //if (i==j) continue; //skip if same muon
-              currentDeltaR = RazorAnalyzer_trigEff::deltaR(Jet_eta[i], Jet_phi[i], MuonSystem->cscRechitClusterEta[MuonSystem->nCscRechitClusters],MuonSystem->cscRechitClusterPhi[MuonSystem->nCscRechitClusters]);
-              if (currentDeltaRJet < 0.4 && Jet_pt[i] > MuonSystem->cscRechitClusterJetVetoPt[MuonSystem->nCscRechitClusters] && currentDeltaRJet < minDeltaRJet) {
+              currentDeltaR = RazorAnalyzer_trigEff::deltaR(tmp.jet.Eta(), tmp.jet.Phi(), MuonSystem->cscRechitClusterEta[MuonSystem->nCscRechitClusters],MuonSystem->cscRechitClusterPhi[MuonSystem->nCscRechitClusters]);
+              if (currentDeltaRJet < 0.4 && tmp.jet.Pt() > MuonSystem->cscRechitClusterJetVetoPt[MuonSystem->nCscRechitClusters] && currentDeltaRJet < minDeltaRJet) {
+                if (matchedSingleCluster||matchedSingleCluster_notProbe) {
+                  MuonSystem->cscRechitCluster_matchToProbeAndJet[MuonSystem->nCscRechitClusters] = true;
+                  continue;
+                }
+                
                 minDeltaRJet = currentDeltaRJet; //this way, we always match to muon with smallest delta R less than 0.4
-                MuonSystem->cscRechitClusterJetVetoPt[MuonSystem->nCscRechitClusters]  = Jet_pt[i];
+                MuonSystem->cscRechitClusterJetVetoPt[MuonSystem->nCscRechitClusters]  = tmp.jet.Pt();
                 //MuonSystem->cscRechitClusterMuonVetoE[MuonSystem->nCscRechitClusters]  = muonE[j];
                 //MuonSystem->cscRechitClusterMuonVetoGlobal[MuonSystem->nCscRechitClusters]  = Muon_isGlobal[i];
                 //MuonSystem->cscRechitClusterMuonVetoLooseId[MuonSystem->nCscRechitClusters]  = Muon_looseId[i];
-                matchedSingleClusterJet = true;
-                }
+                if (tmp.highPtJet) matchedSingleClusterHighPtJet = true;
+                else matchedSingleClusterLowPtJet = true;
+                
             }
           }
-            MuonSystem->cscRechitCluster_matchToJet[MuonSystem->nCscRechitClusters] = matchedSingleClusterJet;
-            MuonSystem->cscRechitCluster_notMatched[MuonSystem->nCscRechitClusters] = !(matchedSingleCluster||matchedSingleCluster_notProbe||matchedSingleClusterJet);
+            MuonSystem->cscRechitCluster_matchToHighPtJet[MuonSystem->nCscRechitClusters] = matchedSingleClusterHighPtJet;
+            MuonSystem->cscRechitCluster_matchToLowPtJet[MuonSystem->nCscRechitClusters] = matchedSingleClusterLowPtJet;
+            MuonSystem->cscRechitCluster_notMatched[MuonSystem->nCscRechitClusters] = !(matchedSingleCluster||matchedSingleCluster_notProbe||matchedSingleClusterHighPtJet||matchedSingleClusterLowPtJet);
           if(!isData)
           {
             // match to gen level LLP

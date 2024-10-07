@@ -172,7 +172,7 @@ int main(int argc, char* argv[]){
     analyzer.EnableAll();
     analyzer.Analyze(isData, option, outputFileName, label);
     cout << "Process completed!" << endl;
-    cerr << "------------------------------" << endl; //present so that an empty .err file corresponds to a failed job
+    // cerr << "------------------------------" << endl; //present so that an empty .err file corresponds to a failed job
 
     return 0;
 }

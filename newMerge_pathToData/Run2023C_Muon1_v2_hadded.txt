@@ -1,0 +1,1 @@
+root://cmsxrootd.fnal.gov//store/group/lpclonglived/MergedNtuples_Run3/MuonStreams_2022_2023/merged_hadded/Run2023C_Muon1_v2.root
