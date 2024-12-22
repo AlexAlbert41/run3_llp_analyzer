@@ -18,12 +18,14 @@ void TreeMuonSystem_Skim_Merge_TnP::InitVariables()
   runNum=0; lumiSec=0; evtNum=0; MC_condition = 0; category=0;
   npv=0; npu=0;
   pileupWeight = 0;
+  pileupWeightUp = 0; pileupWeightDown = 0;
   weight=-1.0;rho=-1;
   met=-1; metPhi=-1;
   Flag_HBHENoiseFilter = false; Flag_HBHEIsoNoiseFilter = false; Flag_BadPFMuonFilter = false; Flag_BadPFMuonDzFilter = false; Flag_CSCTightHaloFilter = false; Flag_goodVertices = false;
   Flag_ecalBadCalibFilter = false; Flag_all = false; Flag_globalSuperTightHalo2016Filter = false; Flag_BadChargedCandidateFilter = false; Flag_eeBadScFilter = false; Flag_hfNoisyHitsFilter = false;
 
   numProbeMuons = 0;
+  numTag = 0;
   
   lepOverallSF = 1.0;
   Flag2_HBHENoiseFilter = false; Flag2_HBHEIsoNoiseFilter = false; Flag2_BadPFMuonFilter = false; Flag2_globalSuperTightHalo2016Filter = false;
@@ -72,6 +74,25 @@ void TreeMuonSystem_Skim_Merge_TnP::InitVariables()
         cscRechitClusterTimeSpreadWeightedAll[i] = -999.;
         cscRechitClusterTime[i] = -999.;
         cscRechitClusterTimeSpread[i] = -999.;
+        cscRechitClusternXY[i] = -999;
+        cscRechitClusternZ[i] = -999;
+        cscRechitClusterXSpread[i] = -999.;
+        cscRechitClusterYSpread[i] = -999.;
+        cscRechitClusterZSpread[i] = -999.;
+        cscRechitClusterXYSpread[i] = -999.;
+        cscRechitClusterRSpread[i] = -999.;
+        cscRechitClusterEtaPhiSpread[i] = -999.;
+        cscRechitClusterEtaSpread[i] = -999.;
+        cscRechitClusterPhiSpread[i] = -999.;
+        cscRechitClusterDeltaRSpread[i] = -999.;
+        cscRechitClusterMajorAxis[i] = -999.;
+        cscRechitClusterMinorAxis[i] = -999.;
+        cscRechitClusterSkewX[i] = -999.;
+        cscRechitClusterSkewY[i] = -999.;
+        cscRechitClusterSkewZ[i] = -999.;
+        cscRechitClusterKurtX[i] = -999.;
+        cscRechitClusterKurtY[i] = -999.;
+        cscRechitClusterKurtZ[i] = -999.;
         cscRechitClusterEta[i] = -999.;
         cscRechitClusterPhi[i] = -999.;
         cscRechitClusterJetVetoPt[i] = 0.0;
@@ -157,7 +178,25 @@ void TreeMuonSystem_Skim_Merge_TnP::InitVariables()
           dtRechitClusterX[i] = -999.;
           dtRechitClusterY[i] = -999.;
           dtRechitClusterZ[i] = -999.;
-
+          dtRechitClusternXY[i] = -999;
+          dtRechitClusternZ[i] = -999;
+          dtRechitClusterXSpread[i] = -999.;
+          dtRechitClusterYSpread[i] = -999.;
+          dtRechitClusterZSpread[i] = -999.;
+          dtRechitClusterXYSpread[i] = -999.;
+          dtRechitClusterRSpread[i] = -999.;
+          dtRechitClusterEtaPhiSpread[i] = -999.;
+          dtRechitClusterEtaSpread[i] = -999.;
+          dtRechitClusterPhiSpread[i] = -999.;
+          dtRechitClusterDeltaRSpread[i] = -999.;
+          dtRechitClusterMajorAxis[i] = -999.;
+          dtRechitClusterMinorAxis[i] = -999.;
+          dtRechitClusterSkewX[i] = -999.;
+          dtRechitClusterSkewY[i] = -999.;
+          dtRechitClusterSkewZ[i] = -999.;
+          dtRechitClusterKurtX[i] = -999.;
+          dtRechitClusterKurtY[i] = -999.;
+          dtRechitClusterKurtZ[i] = -999.;
           dtRechitClusterWheel[i] = -999;
 
 
@@ -309,8 +348,12 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
   tree_->SetBranchAddress("lepOverallSF",      &lepOverallSF);
 
   tree_->SetBranchAddress("numProbeMuons",      &numProbeMuons);
+  tree_->SetBranchAddress("numTag",      &numTag);
 
   tree_->SetBranchAddress("pileupWeight",      &pileupWeight);
+  tree_->SetBranchAddress("pileupWeightUp",      &pileupWeightUp);
+  tree_->SetBranchAddress("pileupWeightDown",      &pileupWeightDown);
+
   tree_->SetBranchAddress("Flag_HBHENoiseFilter",      &Flag_HBHENoiseFilter);
   tree_->SetBranchAddress("Flag_HBHEIsoNoiseFilter",      &Flag_HBHEIsoNoiseFilter);
   tree_->SetBranchAddress("Flag_BadPFMuonFilter",      &Flag_BadPFMuonFilter);
@@ -437,6 +480,25 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
 
     tree_->SetBranchAddress("dtRechitClusterMet_dPhi",             dtRechitClusterMet_dPhi);
 
+    tree_->SetBranchAddress("dtRechitClusternXY",             dtRechitClusternXY);
+    tree_->SetBranchAddress("dtRechitClusternZ",             dtRechitClusternZ);
+    tree_->SetBranchAddress("dtRechitClusterXSpread",             dtRechitClusterXSpread);
+    tree_->SetBranchAddress("dtRechitClusterYSpread",             dtRechitClusterYSpread);
+    tree_->SetBranchAddress("dtRechitClusterZSpread",             dtRechitClusterZSpread);
+    tree_->SetBranchAddress("dtRechitClusterXYSpread",             dtRechitClusterXYSpread);
+    tree_->SetBranchAddress("dtRechitClusterRSpread",             dtRechitClusterRSpread);
+    tree_->SetBranchAddress("dtRechitClusterEtaPhiSpread",             dtRechitClusterEtaPhiSpread);
+    tree_->SetBranchAddress("dtRechitClusterEtaSpread",             dtRechitClusterEtaSpread);
+    tree_->SetBranchAddress("dtRechitClusterPhiSpread",             dtRechitClusterPhiSpread);
+    tree_->SetBranchAddress("dtRechitClusterDeltaRSpread",             dtRechitClusterDeltaRSpread);
+    tree_->SetBranchAddress("dtRechitClusterMajorAxis",             dtRechitClusterMajorAxis);
+    tree_->SetBranchAddress("dtRechitClusterMinorAxis",             dtRechitClusterMinorAxis);
+    tree_->SetBranchAddress("dtRechitClusterSkewX",             dtRechitClusterSkewX);
+    tree_->SetBranchAddress("dtRechitClusterSkewY",             dtRechitClusterSkewY);
+    tree_->SetBranchAddress("dtRechitClusterSkewZ",             dtRechitClusterSkewZ);
+    tree_->SetBranchAddress("dtRechitClusterKurtX",             dtRechitClusterKurtX);
+    tree_->SetBranchAddress("dtRechitClusterKurtY",             dtRechitClusterKurtY);
+    tree_->SetBranchAddress("dtRechitClusterKurtZ",             dtRechitClusterKurtZ);
   tree_->SetBranchAddress("dtRechitCluster_matchToProbeMuon",             dtRechitCluster_matchToProbeMuon);
 
 
@@ -471,6 +533,28 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
 
   tree_->SetBranchAddress("cscRechitClusterTime",             cscRechitClusterTime);
   tree_->SetBranchAddress("cscRechitClusterTimeSpread",             cscRechitClusterTimeSpread);
+
+  tree_->SetBranchAddress("cscRechitClusternXY",             cscRechitClusternXY);
+  tree_->SetBranchAddress("cscRechitClusternZ",             cscRechitClusternZ);
+  tree_->SetBranchAddress("cscRechitClusterXSpread",             cscRechitClusterXSpread);
+  tree_->SetBranchAddress("cscRechitClusterYSpread",             cscRechitClusterYSpread);
+  tree_->SetBranchAddress("cscRechitClusterZSpread",             cscRechitClusterZSpread);
+  tree_->SetBranchAddress("cscRechitClusterXYSpread",             cscRechitClusterXYSpread);
+  tree_->SetBranchAddress("cscRechitClusterRSpread",             cscRechitClusterRSpread);
+  tree_->SetBranchAddress("cscRechitClusterEtaPhiSpread",             cscRechitClusterEtaPhiSpread);
+  tree_->SetBranchAddress("cscRechitClusterEtaSpread",             cscRechitClusterEtaSpread);
+  tree_->SetBranchAddress("cscRechitClusterPhiSpread",             cscRechitClusterPhiSpread);
+  tree_->SetBranchAddress("cscRechitClusterDeltaRSpread",             cscRechitClusterDeltaRSpread);
+  tree_->SetBranchAddress("cscRechitClusterMajorAxis",             cscRechitClusterMajorAxis);
+  tree_->SetBranchAddress("cscRechitClusterMinorAxis",             cscRechitClusterMinorAxis);
+  tree_->SetBranchAddress("cscRechitClusterSkewX",             cscRechitClusterSkewX);
+  tree_->SetBranchAddress("cscRechitClusterSkewY",             cscRechitClusterSkewY);
+  tree_->SetBranchAddress("cscRechitClusterSkewZ",             cscRechitClusterSkewZ);
+  tree_->SetBranchAddress("cscRechitClusterKurtX",             cscRechitClusterKurtX);
+  tree_->SetBranchAddress("cscRechitClusterKurtY",             cscRechitClusterKurtY);
+  tree_->SetBranchAddress("cscRechitClusterKurtZ",             cscRechitClusterKurtZ);
+
+
 
   tree_->SetBranchAddress("cscRechitClusterEta",             cscRechitClusterEta);
   tree_->SetBranchAddress("cscRechitClusterPhi",             cscRechitClusterPhi);
@@ -523,6 +607,8 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
   tree_->SetBranchAddress("cscRechitClusterMet_dPhi",             cscRechitClusterMet_dPhi);
 
   tree_->SetBranchAddress("cscRechitCluster_matchToProbeMuon",             cscRechitCluster_matchToProbeMuon);
+  tree_->SetBranchAddress("cscRechitCluster_matchToMuon1",             cscRechitCluster_matchToMuon1);
+  tree_->SetBranchAddress("cscRechitCluster_matchToMuon2",             cscRechitCluster_matchToMuon2);
   tree_->SetBranchAddress("cscRechitCluster_matchToNotProbeMuon",             cscRechitCluster_matchToNotProbeMuon);
   tree_->SetBranchAddress("cscRechitCluster_matchToProbeAndJet",             cscRechitCluster_matchToProbeAndJet);
   tree_->SetBranchAddress("cscRechitCluster_matchToHighPtJet",             cscRechitCluster_matchToHighPtJet);
@@ -656,8 +742,12 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
   tree_->Branch("weight",      &weight,     "weight/F");
   tree_->Branch("lepOverallSF",      &lepOverallSF,     "lepOverallSF/F");
   tree_->Branch("pileupWeight",      &pileupWeight,     "pileupWeight/F");
+  tree_->Branch("pileupWeightUp",      &pileupWeightUp,     "pileupWeightUp/F");
+  tree_->Branch("pileupWeightDown",      &pileupWeightDown,     "pileupWeightDown/F");
 
   tree_->Branch("numProbeMuons",      &numProbeMuons,     "numProbeMuons/I");
+
+  tree_->Branch("numTag",      &numTag,     "numTag/I");
 
   tree_->Branch("Flag_HBHENoiseFilter",      &Flag_HBHENoiseFilter,     "Flag_HBHENoiseFilter/O");
   tree_->Branch("Flag_BadPFMuonFilter",      &Flag_BadPFMuonFilter,     "Flag_BadPFMuonFilter/O");
@@ -720,6 +810,25 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
     tree_->Branch("cscRechitClusterY",             cscRechitClusterY,             "cscRechitClusterY[nCscRechitClusters]/F");
     tree_->Branch("cscRechitClusterZ",             cscRechitClusterZ,             "cscRechitClusterZ[nCscRechitClusters]/F");
     tree_->Branch("cscRechitClusterTimeWeighted",             cscRechitClusterTimeWeighted,             "cscRechitClusterTimeWeighted[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusternXY",             cscRechitClusternXY,             "cscRechitClusternXY[nCscRechitClusters]/I");
+    tree_->Branch("cscRechitClusternZ",             cscRechitClusternZ,             "cscRechitClusternZ[nCscRechitClusters]/I");
+    tree_->Branch("cscRechitClusterXSpread",             cscRechitClusterXSpread,             "cscRechitClusterXSpread[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterYSpread",             cscRechitClusterYSpread,             "cscRechitClusterYSpread[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterZSpread",             cscRechitClusterZSpread,             "cscRechitClusterZSpread[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterXYSpread",             cscRechitClusterXYSpread,             "cscRechitClusterXYSpread[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterRSpread",             cscRechitClusterRSpread,             "cscRechitClusterRSpread[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterEtaPhiSpread",             cscRechitClusterEtaPhiSpread,             "cscRechitClusterEtaPhiSpread[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterEtaSpread",             cscRechitClusterEtaSpread,             "cscRechitClusterEtaSpread[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterPhiSpread",             cscRechitClusterPhiSpread,             "cscRechitClusterPhiSpread[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterDeltaRSpread",             cscRechitClusterDeltaRSpread,             "cscRechitClusterDeltaRSpread[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterMajorAxis",             cscRechitClusterMajorAxis,             "cscRechitClusterMajorAxis[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterMinorAxis",             cscRechitClusterMinorAxis,             "cscRechitClusterMinorAxis[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterSkewX",             cscRechitClusterSkewX,             "cscRechitClusterSkewX[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterSkewY",             cscRechitClusterSkewY,             "cscRechitClusterSkewY[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterSkewZ",             cscRechitClusterSkewZ,             "cscRechitClusterSkewZ[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterKurtX",             cscRechitClusterKurtX,             "cscRechitClusterKurtX[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterKurtY",             cscRechitClusterKurtY,             "cscRechitClusterKurtY[nCscRechitClusters]/F");
+    tree_->Branch("cscRechitClusterKurtZ",             cscRechitClusterKurtZ,             "cscRechitClusterKurtZ[nCscRechitClusters]/F");
 
     tree_->Branch("cscRechitClusterTimeSpreadWeightedAll",             cscRechitClusterTimeSpreadWeightedAll,             "cscRechitClusterTimeSpreadWeightedAll[nCscRechitClusters]/F");
     tree_->Branch("cscRechitClusterTime",             cscRechitClusterTime,             "cscRechitClusterTime[nCscRechitClusters]/F");
@@ -774,6 +883,8 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
     tree_->Branch("cscRechitClusterNRechitChamberMinus42",             cscRechitClusterNRechitChamberMinus42,             "cscRechitClusterNRechitChamberMinus42[nCscRechitClusters]/I");
     tree_->Branch("cscRechitClusterMet_dPhi",             cscRechitClusterMet_dPhi,             "cscRechitClusterMet_dPhi[nCscRechitClusters]/F");
     tree_->Branch("cscRechitCluster_matchToProbeMuon",             cscRechitCluster_matchToProbeMuon,            "cscRechitCluster_matchToProbeMuon[nCscRechitClusters]/O");
+    tree_->Branch("cscRechitCluster_matchToMuon1",             cscRechitCluster_matchToMuon1,            "cscRechitCluster_matchToMuon1[nCscRechitClusters]/O");
+    tree_->Branch("cscRechitCluster_matchToMuon2",             cscRechitCluster_matchToMuon2,            "cscRechitCluster_matchToMuon2[nCscRechitClusters]/O");
     tree_->Branch("cscRechitCluster_matchToProbeAndJet",             cscRechitCluster_matchToProbeAndJet,            "cscRechitCluster_matchToProbeAndJet[nCscRechitClusters]/O");
     tree_->Branch("cscRechitCluster_matchToNotProbeMuon",             cscRechitCluster_matchToNotProbeMuon,            "cscRechitCluster_matchToNotProbeMuon[nCscRechitClusters]/O");
     tree_->Branch("cscRechitCluster_matchToHighPtJet",             cscRechitCluster_matchToHighPtJet,            "cscRechitCluster_matchToHighPtJet[nCscRechitClusters]/O");
@@ -863,6 +974,26 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
         tree_->Branch("dtRechitClusterNHitStation3",             dtRechitClusterNHitStation3,             "dtRechitClusterNHitStation3[nDtRechitClusters]/I");
         tree_->Branch("dtRechitClusterNHitStation4",             dtRechitClusterNHitStation4,             "dtRechitClusterNHitStation4[nDtRechitClusters]/I");
         tree_->Branch("dtRechitClusterMet_dPhi",             dtRechitClusterMet_dPhi,             "dtRechitClusterMet_dPhi[nDtRechitClusters]/F");
+
+        tree_->Branch("dtRechitClusternXY",             dtRechitClusternXY,             "dtRechitClusternXY[nDtRechitClusters]/I");
+        tree_->Branch("dtRechitClusternZ",             dtRechitClusternZ,             "dtRechitClusternZ[nDtRechitClusters]/I");
+        tree_->Branch("dtRechitClusterXSpread",             dtRechitClusterXSpread,             "dtRechitClusterXSpread[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterYSpread",             dtRechitClusterYSpread,             "dtRechitClusterYSpread[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterZSpread",             dtRechitClusterZSpread,             "dtRechitClusterZSpread[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterXYSpread",             dtRechitClusterXYSpread,             "dtRechitClusterXYSpread[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterRSpread",             dtRechitClusterRSpread,             "dtRechitClusterRSpread[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterEtaPhiSpread",             dtRechitClusterEtaPhiSpread,             "dtRechitClusterEtaPhiSpread[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterEtaSpread",             dtRechitClusterEtaSpread,             "dtRechitClusterEtaSpread[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterPhiSpread",             dtRechitClusterPhiSpread,             "dtRechitClusterPhiSpread[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterDeltaRSpread",             dtRechitClusterDeltaRSpread,             "dtRechitClusterDeltaRSpread[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterMajorAxis",             dtRechitClusterMajorAxis,             "dtRechitClusterMajorAxis[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterMinorAxis",             dtRechitClusterMinorAxis,             "dtRechitClusterMinorAxis[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterSkewX",             dtRechitClusterSkewX,             "dtRechitClusterSkewX[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterSkewY",             dtRechitClusterSkewY,             "dtRechitClusterSkewY[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterSkewZ",             dtRechitClusterSkewZ,             "dtRechitClusterSkewZ[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterKurtX",             dtRechitClusterKurtX,             "dtRechitClusterKurtX[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterKurtY",             dtRechitClusterKurtY,             "dtRechitClusterKurtY[nDtRechitClusters]/F");
+        tree_->Branch("dtRechitClusterKurtZ",             dtRechitClusterKurtZ,             "dtRechitClusterKurtZ[nDtRechitClusters]/F");
 
 
 
