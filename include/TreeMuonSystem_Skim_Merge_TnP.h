@@ -52,6 +52,7 @@ public:
   UInt_t  npv, npu;
   float rho, weight;
   float pileupWeight;
+  float pileupWeightUp; float pileupWeightDown;
 
   float met, metPhi;
   bool Flag_HBHENoiseFilter, Flag_HBHEIsoNoiseFilter, Flag_BadPFMuonFilter, Flag_BadPFMuonDzFilter, Flag_hfNoisyHitsFilter, Flag_globalSuperTightHalo2016Filter,
@@ -62,7 +63,7 @@ public:
   Flag2_globalTightHalo2016Filter, Flag2_BadChargedCandidateFilter, Flag2_EcalDeadCellTriggerPrimitiveFilter,
   Flag2_ecalBadCalibFilter, Flag2_eeBadScFilter, Flag2_all;
 
-  int numProbeMuons;
+  int numProbeMuons; int numTag;
 
   //csc
   int           nCscRechits;
@@ -153,6 +154,25 @@ public:
 
   bool          dtRechitCluster_matchToProbeMuon[N_MAX_CSC];
   
+  int         dtRechitClusternXY[N_MAX_CSC];
+  int         dtRechitClusternZ[N_MAX_CSC];
+  float         dtRechitClusterXSpread[N_MAX_CSC];
+  float         dtRechitClusterYSpread[N_MAX_CSC];
+  float         dtRechitClusterZSpread[N_MAX_CSC];
+  float         dtRechitClusterXYSpread[N_MAX_CSC];
+  float         dtRechitClusterRSpread[N_MAX_CSC];
+  float         dtRechitClusterEtaPhiSpread[N_MAX_CSC];
+  float         dtRechitClusterEtaSpread[N_MAX_CSC];
+  float         dtRechitClusterPhiSpread[N_MAX_CSC];
+  float         dtRechitClusterDeltaRSpread[N_MAX_CSC];
+  float         dtRechitClusterMajorAxis[N_MAX_CSC];
+  float         dtRechitClusterMinorAxis[N_MAX_CSC];
+  float         dtRechitClusterSkewX[N_MAX_CSC];
+  float         dtRechitClusterSkewY[N_MAX_CSC];
+  float         dtRechitClusterSkewZ[N_MAX_CSC];
+  float         dtRechitClusterKurtX[N_MAX_CSC];
+  float         dtRechitClusterKurtY[N_MAX_CSC];
+  float         dtRechitClusterKurtZ[N_MAX_CSC];
 
 
   int           nCscRechitClusters;
@@ -181,7 +201,25 @@ public:
   float         cscRechitClusterEta[N_MAX_CSC];   //[nCsc]
   float         cscRechitClusterPhi[N_MAX_CSC];   //[nCsc]
   int           cscRechitClusterSize[N_MAX_CSC];
-
+  int           cscRechitClusternXY[N_MAX_CSC];
+  int           cscRechitClusternZ[N_MAX_CSC];
+  float         cscRechitClusterXSpread[N_MAX_CSC];
+  float         cscRechitClusterYSpread[N_MAX_CSC];
+  float         cscRechitClusterZSpread[N_MAX_CSC];
+  float         cscRechitClusterXYSpread[N_MAX_CSC];
+  float         cscRechitClusterRSpread[N_MAX_CSC];
+  float         cscRechitClusterEtaPhiSpread[N_MAX_CSC];
+  float         cscRechitClusterEtaSpread[N_MAX_CSC];
+  float         cscRechitClusterPhiSpread[N_MAX_CSC];
+  float         cscRechitClusterDeltaRSpread[N_MAX_CSC];
+  float         cscRechitClusterMajorAxis[N_MAX_CSC];
+  float         cscRechitClusterMinorAxis[N_MAX_CSC];
+  float         cscRechitClusterSkewX[N_MAX_CSC];
+  float         cscRechitClusterSkewY[N_MAX_CSC];
+  float         cscRechitClusterSkewZ[N_MAX_CSC];
+  float         cscRechitClusterKurtX[N_MAX_CSC];
+  float         cscRechitClusterKurtY[N_MAX_CSC];
+  float         cscRechitClusterKurtZ[N_MAX_CSC];
 
 
   float         cscRechitClusterMaxStationRatio[N_MAX_CSC];   //[nCsc]
@@ -229,6 +267,8 @@ public:
   int           cscRechitClusterNRechitChamberMinus42[N_MAX_CSC];
   float         cscRechitClusterMet_dPhi[N_MAX_CSC];
   bool          cscRechitCluster_matchToProbeMuon[N_MAX_CSC];
+  int           cscRechitCluster_matchToMuon1[N_MAX_CSC];
+  int           cscRechitCluster_matchToMuon2[N_MAX_CSC];
   bool          cscRechitCluster_matchToNotProbeMuon[N_MAX_CSC];
   bool          cscRechitCluster_matchToProbeAndJet[N_MAX_CSC];
   bool          cscRechitCluster_matchToHighPtJet[N_MAX_CSC];

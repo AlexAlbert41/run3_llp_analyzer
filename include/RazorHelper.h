@@ -9,11 +9,12 @@
 
 #include "TFile.h"
 #include "TH1F.h"
+#include "TEfficiency.h"
 #include "TH2D.h"
 #include "TRandom.h"
 
 
-#include "RazorAnalyzer_TnP.h"
+#include "RazorAnalyzer.h"
 
 class RazorHelper {
 
@@ -26,6 +27,7 @@ class RazorHelper {
 
 
         double getMetTriggerSF(float met);
+        double getHMTTriggerEff(int chamber, int nhits);
         // retrieve pileup weights (nominal, up, and down versions)
         double getPileupWeight(int NPU);
         double getPileupWeightUp(int NPU);
@@ -36,9 +38,19 @@ class RazorHelper {
     private:
         // member functions
 
-        void loadTag_Razor2018_17SeptEarlyReReco();
+        void loadTag_Summer22();
+        void loadTag_Summer22EE();
+        void loadTag_Summer23();
+        void loadTag_Summer23BPix();
         void loadTag_Null(); // Default when tag is not provided
         void loadCMSSWPath();
+
+
+        void loadPileup_Summer22();
+        void loadPileup_Summer22EE();
+        void loadPileup_Summer23();
+        void loadPileup_Summer23BPix();
+        void loadHMTEfficiency();
 
         //for Razor Razor2018
         void loadPileup_Razor2018_17SeptEarlyReReco();
@@ -58,6 +70,18 @@ class RazorHelper {
         TH1F *pileupWeightHist;
         TH1F *pileupWeightSysUpHist;
         TH1F *pileupWeightSysDownHist;
+
+        TFile *HMTEffFile;
+        // TGraphAsymmErrors *HMTEffHist11;
+        // TGraphAsymmErrors *HMTEffHist12;
+        // TGraphAsymmErrors *HMTEffHist13;
+        // TGraphAsymmErrors *HMTEffHist21;
+        // TGraphAsymmErrors *HMTEffHist22;
+        // TGraphAsymmErrors *HMTEffHist31;
+        // TGraphAsymmErrors *HMTEffHist32;
+        // TGraphAsymmErrors *HMTEffHist41;
+        // TGraphAsymmErrors *HMTEffHist42;
+        map<int, TEfficiency*> HMTEffHist;
 
 
 };
