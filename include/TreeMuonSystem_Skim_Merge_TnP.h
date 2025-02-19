@@ -55,13 +55,14 @@ public:
   float pileupWeightUp; float pileupWeightDown;
 
   float met, metPhi;
+  float puppiMet, puppiMetPhi;
   bool Flag_HBHENoiseFilter, Flag_HBHEIsoNoiseFilter, Flag_BadPFMuonFilter, Flag_BadPFMuonDzFilter, Flag_hfNoisyHitsFilter, Flag_globalSuperTightHalo2016Filter,
   Flag_CSCTightHaloFilter, Flag_BadChargedCandidateFilter, Flag_eeBadScFilter, Flag_goodVertices, Flag_ecalBadCalibFilter, Flag_all;
   int mH, mX, ctau;
 
   bool Flag2_HBHENoiseFilter, Flag2_HBHEIsoNoiseFilter, Flag2_BadPFMuonFilter, Flag2_globalSuperTightHalo2016Filter,
   Flag2_globalTightHalo2016Filter, Flag2_BadChargedCandidateFilter, Flag2_EcalDeadCellTriggerPrimitiveFilter,
-  Flag2_ecalBadCalibFilter, Flag2_eeBadScFilter, Flag2_all;
+  Flag2_ecalBadCalibFilter, Flag2_eeBadScFilter, Flag2_all, Flag_EcalDeadCellTriggerPrimitiveFilter, jetVeto;
 
   int numProbeMuons; int numTag;
 
@@ -175,6 +176,25 @@ public:
   float         dtRechitClusterKurtZ[N_MAX_CSC];
 
 
+  bool           dtRechitCluster_matchToMuon1[N_MAX_CSC];
+  bool           dtRechitCluster_matchToMuon2[N_MAX_CSC];
+  bool          dtRechitCluster_matchToNotProbeMuon[N_MAX_CSC];
+  bool          dtRechitCluster_matchToProbeAndJet[N_MAX_CSC];
+  bool          dtRechitCluster_matchToHighPtJet[N_MAX_CSC];
+  bool          dtRechitCluster_matchToLowPtJet[N_MAX_CSC];
+  bool          dtRechitCluster_notMatched[N_MAX_CSC];
+  bool          dtRechitCluster_PassTimeVeto[N_MAX_CSC];
+  bool          dtRechitCluster_passForwardVeto[N_MAX_CSC];
+  bool          dtRechitCluster_HLTCscCluster_Loose_Decision[N_MAX_CSC];
+  bool          dtRechitCluster_HLTCscCluster_Medium_Decision[N_MAX_CSC];
+  bool          dtRechitCluster_HLTCscCluster_Tight_Decision[N_MAX_CSC];
+  int           dtRechitCluster_match_gParticle_id[N_MAX_CSC];
+  int           dtRechitCluster_match_gParticle_mother_id[N_MAX_CSC];
+  float         dtRechitCluster_match_gParticle_cluster_deltaR[N_MAX_CSC];
+  float         dtRechitCluster_match_gParticle_pt[N_MAX_CSC];
+  
+  
+  
   int           nCscRechitClusters;
 
 
@@ -267,8 +287,8 @@ public:
   int           cscRechitClusterNRechitChamberMinus42[N_MAX_CSC];
   float         cscRechitClusterMet_dPhi[N_MAX_CSC];
   bool          cscRechitCluster_matchToProbeMuon[N_MAX_CSC];
-  int           cscRechitCluster_matchToMuon1[N_MAX_CSC];
-  int           cscRechitCluster_matchToMuon2[N_MAX_CSC];
+  bool           cscRechitCluster_matchToMuon1[N_MAX_CSC];
+  bool          cscRechitCluster_matchToMuon2[N_MAX_CSC];
   bool          cscRechitCluster_matchToNotProbeMuon[N_MAX_CSC];
   bool          cscRechitCluster_matchToProbeAndJet[N_MAX_CSC];
   bool          cscRechitCluster_matchToHighPtJet[N_MAX_CSC];

@@ -33,6 +33,8 @@ class RazorHelper {
         double getPileupWeightUp(int NPU);
         double getPileupWeightDown(int NPU);
 
+        double getJetVetoMap(float eta, float phi);
+        double getJetVetoFpixMap(float eta, float phi);
 
 
     private:
@@ -42,6 +44,8 @@ class RazorHelper {
         void loadTag_Summer22EE();
         void loadTag_Summer23();
         void loadTag_Summer23BPix();
+        void loadTag_Summer24();
+
         void loadTag_Null(); // Default when tag is not provided
         void loadCMSSWPath();
 
@@ -50,7 +54,15 @@ class RazorHelper {
         void loadPileup_Summer22EE();
         void loadPileup_Summer23();
         void loadPileup_Summer23BPix();
+        void loadPileup_Summer24();
         void loadHMTEfficiency();
+
+        void loadJetVeto_Summer22();
+        void loadJetVeto_Summer22EE();
+        void loadJetVeto_Summer23();
+        void loadJetVeto_Summer23BPix();
+        void loadJetVeto_Summer24();
+        
 
         //for Razor Razor2018
         void loadPileup_Razor2018_17SeptEarlyReReco();
@@ -71,16 +83,12 @@ class RazorHelper {
         TH1F *pileupWeightSysUpHist;
         TH1F *pileupWeightSysDownHist;
 
+        TFile *JetVetoFile;
+        TH2D *JetVetoHist;
+        TH2D *JetVetoFpixHist;
+
         TFile *HMTEffFile;
-        // TGraphAsymmErrors *HMTEffHist11;
-        // TGraphAsymmErrors *HMTEffHist12;
-        // TGraphAsymmErrors *HMTEffHist13;
-        // TGraphAsymmErrors *HMTEffHist21;
-        // TGraphAsymmErrors *HMTEffHist22;
-        // TGraphAsymmErrors *HMTEffHist31;
-        // TGraphAsymmErrors *HMTEffHist32;
-        // TGraphAsymmErrors *HMTEffHist41;
-        // TGraphAsymmErrors *HMTEffHist42;
+
         map<int, TEfficiency*> HMTEffHist;
 
 

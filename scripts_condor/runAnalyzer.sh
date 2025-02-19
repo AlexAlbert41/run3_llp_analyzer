@@ -12,7 +12,7 @@ jobnumber=$5
 maxjob=$6
 sample=${inputfilelist##*/}
 sample=${sample%.txt}
-outputfile=${sample}_Job${jobnumber}_of_${maxjob}.root
+outputfile=${sample}_Job${jobnumber}_of_${maxjob}_postTnP_noClusters.root
 outputDirectory=$7
 analyzerTag=$8
 CMSSW_BASE=$9
@@ -79,11 +79,24 @@ then
         #        cp $CMSSW_BASE/src/run3_llp_analyzer/DNNevaluation/*.h5 .
 		cp RazorRun ${runDir}
 		cp Runllp_MuonSystem_CA_TnP ${runDir}
+		cp Runllp_MuonSystem_CA_TnP_noClusters ${runDir}
 		cp EvaluateDNN.py ${runDir}
 		cp training_CA0p6_NoMerging_WeightedClusterSize_bkgMC_CSCOnly_adversarial_PlusBeamHalo_240510.h5 ${runDir}
 		cp ${sample}.txt ${runDir}
+		cp PileupReweight_Summer22.root ${runDir}
+		cp PileupReweight_Summer22EE.root ${runDir}
+		cp PileupReweight_Summer23.root ${runDir}
+		cp PileupReweight_Summer23BPix.root ${runDir}
+		cp PileupReweight_Winter24.root ${runDir}
 
-		
+		cp Summer22_23Sep2023_RunCD_v1.root ${runDir}
+		cp Summer22EE_23Sep2023_RunEFG_v1.root ${runDir}
+		cp Summer23BPixPrompt23_RunD_v1.root ${runDir}
+		cp Summer23Prompt23_RunC_v1.root ${runDir}
+		cp Winter24Prompt24_2024BCDEFGHI.root ${runDir}
+
+
+
 		#get grid proxy
 		export X509_USER_PROXY=${currentDir}/x509up_u57571
 		echo "${currentDir}/x509up_u57571"
@@ -108,7 +121,7 @@ then
 		ls -ltr *ntupler*.root
 		ls -ltr
 		echo "now sending ls output to new file"
-		ls *ntupler*.root > inputfilelistForThisJob_${jobnumber}.txt
+		ls *Job*.root > inputfilelistForThisJob_${jobnumber}.txt
 		
 		
 
@@ -124,22 +137,25 @@ then
 			echo "./RazorRun inputfilelistForThisJob_${jobnumber}.txt ${analysisType} -f=${outputfile}"
 			./RazorRun inputfilelistForThisJob_${jobnumber}.txt ${analysisType} -f=${outputfile}
 		else
-			echo ./Runllp_MuonSystem_CA_TnP inputfilelistForThisJob_${jobnumber}.txt -d=${isData}  -f=${outputfile} -l=${analyzerTag}
-			./Runllp_MuonSystem_CA_TnP inputfilelistForThisJob_${jobnumber}.txt  --isData  -f=${outputfile}
+			#echo ./Runllp_MuonSystem_CA_TnP inputfilelistForThisJob_${jobnumber}.txt -d=${isData}  -f=${outputfile} -l=${analyzerTag}
+
+			#./Runllp_MuonSystem_CA_TnP inputfilelistForThisJob_${jobnumber}.txt  --isData  -f=${outputfile}
+			echo ./Runllp_MuonSystem_CA_TnP_noClusters inputfilelistForThisJob_${jobnumber}.txt  -f=${outputfile} -l=${analyzerTag}
+			./Runllp_MuonSystem_CA_TnP_noClusters inputfilelistForThisJob_${jobnumber}.txt  -f=${outputfile} -l=${analyzerTag}
 		fi
 
 		echo ${outputfile}
 		echo ${outputDirectory}
-		ls *root > output.txt
+		ls *postTnP.root > output.txt
 		echo "Output ROOT files: "
 		cat output.txt
 		##^_^##
 		echo "RazorRun_T2 finished"
 		date
 
-		echo "start DNN evaluation"
-		source /cvmfs/sft.cern.ch/lcg/views/LCG_103/x86_64-centos7-gcc11-opt/setup.sh
-		python EvaluateDNN.py --in_file ${outputfile}
+		#echo "start DNN evaluation"
+		#source /cvmfs/sft.cern.ch/lcg/views/LCG_103/x86_64-centos7-gcc11-opt/setup.sh
+		#python EvaluateDNN.py --in_file ${outputfile}
 		
 		sleep 2
 		echo "I slept for 2 second"

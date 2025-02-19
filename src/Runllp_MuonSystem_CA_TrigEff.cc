@@ -144,12 +144,12 @@ int main(int argc, char* argv[]){
 	    TFile* f_0 = TFile::Open( curFileName.c_str() );
 	    if( f_0->GetDirectory("ntuples") )
 	      {
-		theChain->SetName("ntuples/llp");
+		theChain->SetName("Events");
 		std::cout << "[INFO]: default configuration for tchain" << std::endl;
 	      }
 	    else
 	      {
-		theChain->SetName("Events");
+		theChain->SetName("llp");
 		std::cout << "[INFO]: alternative configuration for tchain"<< std::endl;
 	      }
 	    theChain->Add( curFileName.c_str() );
@@ -172,7 +172,7 @@ int main(int argc, char* argv[]){
     analyzer.EnableAll();
     analyzer.Analyze(isData, option, outputFileName, label);
     cout << "Process completed!" << endl;
-    // cerr << "------------------------------" << endl; //present so that an empty .err file corresponds to a failed job
+    cerr << "------------------------------" << endl; //present so that an empty .err file corresponds to a failed job
 
     return 0;
 }

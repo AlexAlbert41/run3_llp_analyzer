@@ -21,9 +21,9 @@ HELPERSCRIPT_TnP = python/MakeAnalyzerCode_trigEff.py
 HELPERSCRIPT_trigEff = python/MakeAnalyzerCode_trigEff.py
 
 
-.PHONY: clean all lxplus copy_runners copy_runners_TnP copy_runners_TrigEff
+.PHONY: clean all lxplus copy_runners copy_runners_TnP copy_runners_TrigEff copy_runners_TnP_noClusters
 
-all: copy_runners copy_runners_TnP copy_runners_TrigEff $(EXECUTABLES)
+all: copy_runners copy_runners_TnP copy_runners_TnP_noClusters copy_runners_TrigEff $(EXECUTABLES)
 
 lxplus: all
 
@@ -40,7 +40,7 @@ clean:
 
 copy_runners:
 		@for d in $(subst Run,,$(notdir $(basename $(RUNNERSCC)))); do \
-			if [ $$d != "llp_MuonSystem_CA_TnP" ] && [ $$d != "llp_MuonSystem_CA_TrigEff" ]; then \
+			if [ $$d != "llp_MuonSystem_CA_TnP" ] && [ $$d != "llp_MuonSystem_CA_TrigEff" ] && [ $$d != "llp_MuonSystem_CA_TnP_noClusters" ]; then \
 				if [ ! -f "src/Run"$$d".cc" ]; then \
 					echo $$d "file does not exist, copying"; \
 					echo "Running python/MakeAnalyzerCode.py $$d"; \
@@ -51,6 +51,14 @@ copy_runners:
 
 copy_runners_TnP:		
 		d="llp_MuonSystem_CA_TnP"; \
+		if [ ! -f "src/Run"$$d".cc" ]; then \
+		    echo $$d" file does not exists, copying"; \
+			echo "Running python/MakeAnalyzerCode_trigEff.py $$d"; \
+			$(HELPERSCRIPT_TnP) $$d; \
+		fi
+
+copy_runners_TnP_noClusters:		
+		d="llp_MuonSystem_CA_TnP_noClusters"; \
 		if [ ! -f "src/Run"$$d".cc" ]; then \
 		    echo $$d" file does not exists, copying"; \
 			echo "Running python/MakeAnalyzerCode_trigEff.py $$d"; \
@@ -112,6 +120,9 @@ $(BINDIR)/Runllp_MuonSystem_CA: $(SRCDIR)/llp_event.o $(SRCDIR)/RazorAnalyzer.o 
 	$(CXX) $^ $(CXXFLAGS) -I$(INCLUDEDIR) -I$(ANADIR) $(LDFLAGS) $(LIBS) -o $@ $(CXX14FLAGS)
 
 $(BINDIR)/Runllp_MuonSystem_CA_TnP: $(SRCDIR)/llp_event_trigEff.o $(SRCDIR)/RazorAnalyzer_trigEff.o $(UTILSOBJ) $(ANADIR)/llp_MuonSystem_CA_TnP.o $(SRCDIR)/Runllp_MuonSystem_CA_TnP.cc
+	$(CXX) $^ $(CXXFLAGS) -I$(INCLUDEDIR) -I$(ANADIR) $(LDFLAGS) $(LIBS) -o $@ $(CXX14FLAGS)
+
+$(BINDIR)/Runllp_MuonSystem_CA_TnP_noClusters: $(SRCDIR)/llp_event_trigEff.o $(SRCDIR)/RazorAnalyzer_trigEff.o $(UTILSOBJ) $(ANADIR)/llp_MuonSystem_CA_TnP_noClusters.o $(SRCDIR)/Runllp_MuonSystem_CA_TnP_noClusters.cc
 	$(CXX) $^ $(CXXFLAGS) -I$(INCLUDEDIR) -I$(ANADIR) $(LDFLAGS) $(LIBS) -o $@ $(CXX14FLAGS)
 
 $(BINDIR)/Runllp_MuonSystem_CA_TrigEff: $(SRCDIR)/llp_event_trigEff.o $(SRCDIR)/RazorAnalyzer_trigEff.o $(UTILSOBJ) $(ANADIR)/llp_MuonSystem_CA_TrigEff.o $(SRCDIR)/Runllp_MuonSystem_CA_TrigEff.cc

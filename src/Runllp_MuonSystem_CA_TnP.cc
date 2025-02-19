@@ -163,7 +163,6 @@ int main(int argc, char* argv[]){
         NFilesLoaded++;
       }
     std::cout << "Loaded Total of " << NFilesLoaded << " files\n";
-    std::cout<<"Label: "<<label<<std::endl;
     if ( theChain == NULL ) return -1;
 
     llp_MuonSystem_CA_TnP analyzer(theChain);

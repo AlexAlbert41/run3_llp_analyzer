@@ -21,9 +21,10 @@ void TreeMuonSystem_Skim_Merge_TnP::InitVariables()
   pileupWeightUp = 0; pileupWeightDown = 0;
   weight=-1.0;rho=-1;
   met=-1; metPhi=-1;
+  puppiMet=-1; puppiMetPhi=-1;
   Flag_HBHENoiseFilter = false; Flag_HBHEIsoNoiseFilter = false; Flag_BadPFMuonFilter = false; Flag_BadPFMuonDzFilter = false; Flag_CSCTightHaloFilter = false; Flag_goodVertices = false;
   Flag_ecalBadCalibFilter = false; Flag_all = false; Flag_globalSuperTightHalo2016Filter = false; Flag_BadChargedCandidateFilter = false; Flag_eeBadScFilter = false; Flag_hfNoisyHitsFilter = false;
-
+  Flag_EcalDeadCellTriggerPrimitiveFilter = false; jetVeto=false;
   numProbeMuons = 0;
   numTag = 0;
   
@@ -365,6 +366,9 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
   tree_->SetBranchAddress("Flag_globalSuperTightHalo2016Filter",      &Flag_globalSuperTightHalo2016Filter);
   tree_->SetBranchAddress("Flag_goodVertices",      &Flag_goodVertices);
   tree_->SetBranchAddress("Flag_ecalBadCalibFilter",      &Flag_ecalBadCalibFilter);
+  tree_->SetBranchAddress("jetVeto",      &jetVeto);
+  tree_->SetBranchAddress("Flag_EcalDeadCellTriggerPrimitiveFilter",      &Flag_EcalDeadCellTriggerPrimitiveFilter);
+  
   // tree_->SetBranchAddress("Flag_all",      &Flag_all);
 
   tree_->SetBranchAddress("Flag2_HBHENoiseFilter",      &Flag2_HBHENoiseFilter);
@@ -382,6 +386,8 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
   tree_->SetBranchAddress("rho",         &rho);
   tree_->SetBranchAddress("met",         &met);
   tree_->SetBranchAddress("metPhi",      &metPhi);
+  tree_->SetBranchAddress("puppiMet",         &puppiMet);
+  tree_->SetBranchAddress("puppiMetPhi",      &puppiMetPhi);
 
 
 
@@ -499,7 +505,17 @@ void TreeMuonSystem_Skim_Merge_TnP::InitTree()
     tree_->SetBranchAddress("dtRechitClusterKurtX",             dtRechitClusterKurtX);
     tree_->SetBranchAddress("dtRechitClusterKurtY",             dtRechitClusterKurtY);
     tree_->SetBranchAddress("dtRechitClusterKurtZ",             dtRechitClusterKurtZ);
-  tree_->SetBranchAddress("dtRechitCluster_matchToProbeMuon",             dtRechitCluster_matchToProbeMuon);
+    tree_->SetBranchAddress("dtRechitCluster_matchToProbeMuon",             dtRechitCluster_matchToProbeMuon);
+
+  tree_->SetBranchAddress("dtRechitCluster_matchToMuon1",             dtRechitCluster_matchToMuon1);
+  tree_->SetBranchAddress("dtRechitCluster_matchToMuon2",             dtRechitCluster_matchToMuon2);
+  tree_->SetBranchAddress("dtRechitCluster_matchToNotProbeMuon",             dtRechitCluster_matchToNotProbeMuon);
+  tree_->SetBranchAddress("dtRechitCluster_matchToProbeAndJet",             dtRechitCluster_matchToProbeAndJet);
+  tree_->SetBranchAddress("dtRechitCluster_matchToHighPtJet",             dtRechitCluster_matchToHighPtJet);
+  tree_->SetBranchAddress("dtRechitCluster_matchToLowPtJet",             dtRechitCluster_matchToLowPtJet);
+   tree_->SetBranchAddress("dtRechitCluster_notMatched",             dtRechitCluster_notMatched);
+  tree_->SetBranchAddress("dtRechitCluster_passForwardVeto",             dtRechitCluster_passForwardVeto);
+  tree_->SetBranchAddress("dtRechitCluster_PassTimeVeto",            dtRechitCluster_PassTimeVeto);
 
 
   tree_->SetBranchAddress("nCscRechitClusters",             &nCscRechitClusters);
@@ -760,6 +776,8 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
   tree_->Branch("Flag_BadChargedCandidateFilter",      &Flag_BadChargedCandidateFilter,     "Flag_BadChargedCandidateFilter/O");
   tree_->Branch("Flag_eeBadScFilter",      &Flag_eeBadScFilter,     "Flag_eeBadScFilter/O");
   tree_->Branch("Flag_hfNoisyHitsFilter",      &Flag_hfNoisyHitsFilter,     "Flag_hfNoisyHitsFilter/O");
+  tree_->Branch("Flag_EcalDeadCellTriggerPrimitiveFilter",      &Flag_EcalDeadCellTriggerPrimitiveFilter,     "Flag_EcalDeadCellTriggerPrimitiveFilter/O");
+  tree_->Branch("jetVeto",      &jetVeto,     "jetVeto/O");
   tree_->Branch("Flag_all",      &Flag_all,     "Flag_all/O");
 
   tree_->Branch("Flag2_HBHENoiseFilter",      &Flag2_HBHENoiseFilter,     "Flag2_HBHENoiseFilter/O");
@@ -778,6 +796,8 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
   tree_->Branch("rho",         &rho,        "rho/F");
   tree_->Branch("met",         &met,        "met/F");         // MET
   tree_->Branch("metPhi",      &metPhi,     "metPhi/F");      // phi(MET)
+  tree_->Branch("puppiMet",         &puppiMet,        "puppiMet/F");         // MET
+  tree_->Branch("puppiMetPhi",      &puppiMetPhi,     "puppiMetPhi/F");      // phi(MET)
 
 
 
@@ -1009,6 +1029,22 @@ void TreeMuonSystem_Skim_Merge_TnP::CreateTree()
         tree_->Branch("dtRechitCluster_match_MB1hits_cosmics_minus",             dtRechitCluster_match_MB1hits_cosmics_minus,             "dtRechitCluster_match_MB1hits_cosmics_minus[nDtRechitClusters]/I");
         tree_->Branch("dtRechitCluster_matchToProbeMuon",             dtRechitCluster_matchToProbeMuon,            "dtRechitCluster_matchToProbeMuon[nDtRechitClusters]/O");
 
+    tree_->Branch("dtRechitCluster_matchToMuon1",             dtRechitCluster_matchToMuon1,            "dtRechitCluster_matchToMuon1[nDtRechitClusters]/O");
+    tree_->Branch("dtRechitCluster_matchToMuon2",             dtRechitCluster_matchToMuon2,            "dtRechitCluster_matchToMuon2[nDtRechitClusters]/O");
+    tree_->Branch("dtRechitCluster_matchToProbeAndJet",             dtRechitCluster_matchToProbeAndJet,            "dtRechitCluster_matchToProbeAndJet[nDtRechitClusters]/O");
+    tree_->Branch("dtRechitCluster_matchToNotProbeMuon",             dtRechitCluster_matchToNotProbeMuon,            "dtRechitCluster_matchToNotProbeMuon[nDtRechitClusters]/O");
+    tree_->Branch("dtRechitCluster_matchToHighPtJet",             dtRechitCluster_matchToHighPtJet,            "dtRechitCluster_matchToHighPtJet[nDtRechitClusters]/O");
+    tree_->Branch("dtRechitCluster_matchToLowPtJet",             dtRechitCluster_matchToLowPtJet,            "dtRechitCluster_matchToLowPtJet[nDtRechitClusters]/O");
+    tree_->Branch("dtRechitCluster_notMatched",             dtRechitCluster_notMatched,            "dtRechitCluster_notMatched[nDtRechitClusters]/O");
+    tree_->Branch("dtRechitCluster_passForwardVeto",             dtRechitCluster_passForwardVeto,            "dtRechitCluster_passForwardVeto[nDtRechitClusters]/O");
+    tree_->Branch("dtRechitCluster_PassTimeVeto",            dtRechitCluster_PassTimeVeto,           "dtRechitCluster_PassTimeVeto[nDtRechitClusters]/O");
+    tree_->Branch("dtRechitCluster_HLTCscCluster_Loose_Decision",             dtRechitCluster_HLTCscCluster_Loose_Decision,            "dtRechitCluster_HLTCscCluster_Loose_Decision[nDtRechitClusters]/O");
+    tree_->Branch("dtRechitCluster_HLTCscCluster_Medium_Decision",             dtRechitCluster_HLTCscCluster_Medium_Decision,            "dtRechitCluster_HLTCscCluster_Medium_Decision[nDtRechitClusters]/O");
+    tree_->Branch("dtRechitCluster_HLTCscCluster_Tight_Decision",             dtRechitCluster_HLTCscCluster_Tight_Decision,            "dtRechitCluster_HLTCscCluster_Tight_Decision[nDtRechitClusters]/O");
+    tree_->Branch("dtRechitCluster_match_gParticle_id",             dtRechitCluster_match_gParticle_id,           "dtRechitCluster_match_gParticle_id[nDtRechitClusters]/I");
+    tree_->Branch("dtRechitCluster_match_gParticle_mother_id",             dtRechitCluster_match_gParticle_mother_id,          "dtRechitCluster_match_gParticle_mother_id[nDtRechitClusters]/I");
+    tree_->Branch("dtRechitCluster_match_gParticle_cluster_deltaR",             dtRechitCluster_match_gParticle_cluster_deltaR,         "dtRechitCluster_match_gParticle_cluster_deltaR[nDtRechitClusters]/F");
+    tree_->Branch("dtRechitCluster_match_gParticle_pt",             dtRechitCluster_match_gParticle_pt,          "dtRechitCluster_match_gParticle_pt[nDtRechitClusters]/F");
 
   //gLLP branches
   tree_->Branch("nGLLP",          &nGLLP,          "nGLLP/I");

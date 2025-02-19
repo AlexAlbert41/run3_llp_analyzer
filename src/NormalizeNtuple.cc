@@ -51,7 +51,8 @@ double getNormalizationWeight(string filename, string datasetName, double intLum
   }
   double NEvents = hist->GetBinContent(1);
   */
-  double NEvents = 5903996.0 * 2265.28;
+  //double NEvents = 5903996.0 * 2265.28;
+  double NEvents = 12985380936.0;
   //Get CrossSection
   char* cmsswPath;
   cmsswPath = getenv("CMSSW_BASE");
