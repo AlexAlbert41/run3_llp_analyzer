@@ -198,7 +198,8 @@ void llp_MuonSystem_CA_TnP_noClusters::Analyze(bool isData, int options, string 
   TH1F *probe_cluster_minDeltaR = new TH1F("probe_cluster_minDeltaR", "probe_cluster_minDeltaR", 100, 0, 5);
   TH1F *probe_cluster_minDeltaR_DT = new TH1F("probe_cluster_minDeltaR_DT", "probe_cluster_minDeltaR_DT", 100, 0, 5);
 
-  TH1F *ZMass_Hist = new TH1F("Z Mass", "Z Mass", 100, 50, 120);
+  TH1F *ZMass_Hist = new TH1F("ZMass", "ZMass", 100, 50, 150);
+  TH1F *ZMass_Hist_Gen = new TH1F("ZMassGen", "ZMassGen", 100, 50, 150);
 
   //JetDefinition jet_def( antikt_algorithm, .4 );
   //fastjet::JetDefinition jet_def(fastjet::cambridge_algorithm, 0.4);
@@ -286,6 +287,8 @@ int events_with_dt=0;
       end = clock();
       double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
       cout << "Processing entry " << jentry << endl;
+      //cout << num_two_probe << " events with two probe muons" << endl;
+      //cout << greater_than_one_tag <<endl;
       cout << "Time taken by program is : " << time_taken << endl;
       start = clock();
     }
@@ -600,6 +603,26 @@ int events_with_dt=0;
         if(overlap) continue;
 
 
+        //code for ZMassGen distribution
+        //leptons genMuon1;
+        //leptons genMuon2;
+        /*
+        for (i=0;i<nGenPart;i++){
+          if (GenPart_pdgId[i] == -13 && GenPart_status[i] == 1){
+            TLorentzVector genMuon;
+            genMuon.SetPtEtaPhiM(GenPart_pt[i], GenPart_eta[i], GenPart_phi[i], MU_MASS);
+            for (int j = 0; j < nGenPart; j++){
+              if (GenPart_pdgId[j] == 13 && GenPart_status[j] == 1){
+                TLorentzVector genMuon2;
+                genMuon2.SetPtEtaPhiM(GenPart_pt[j], GenPart_eta[j], GenPart_phi[j], MU_MASS);
+                TLorentzVector Z = genMuon + genMuon2;
+                ZMass_Hist_Gen->Fill(Z.M());
+              }
+            }
+          }
+
+        }
+        */
         leptons tmpMuon;
         tmpMuon.lepton.SetPtEtaPhiM(Muon_pt[i],Muon_eta[i], Muon_phi[i], MU_MASS);
         tmpMuon.pdgId = 13 * -1 * Muon_charge[i];
@@ -679,6 +702,7 @@ int events_with_dt=0;
       */
       
       sort(Leptons.begin(), Leptons.end(), my_largest_pt);
+      //cout<<"nLeptons: "<<Leptons.size()<<endl;
       //cout<< "length of leptons: " << Leptons.size() << endl;
       if (Leptons.size() == 2) num_two_probe++;
       for ( auto &tmp : Leptons ) //note that these lepton variables will only include muon info
@@ -732,11 +756,17 @@ int events_with_dt=0;
         }
       }
     }
-    if (ZMass<50||ZMass>120) continue;
+    ZMass_Hist->Fill(ZMass);
+    if (ZMass<50||ZMass>120){
+      //cout<<"Wrong Z mass: "<<ZMass<<endl;
+      continue;
+    }
+    //} 
     // if (foundZ  && Leptons.size() == 2 && leadingLepPt > zh_lepton0_cut)
     if (foundZ  && Leptons.size() == 2 )
     {
       MuonSystem->ZMass = ZMass;
+      
       //MuonSystem->ZPt   = ZPt;
       //MuonSystem->ZEta  = ZCandidate.Eta();
       //MuonSystem->ZPhi  = ZCandidate.Phi();
@@ -772,10 +802,10 @@ int events_with_dt=0;
       MuonSystem->lepPhi[MuonSystem->nLeptons]    = tmp.lepton.Phi();
       MuonSystem->lepPdgId[MuonSystem->nLeptons]  = tmp.pdgId;
       MuonSystem->lepDZ[MuonSystem->nLeptons]     = tmp.dZ;
-      MuonSystem->lepPassId[MuonSystem->nLeptons] = tmp.passId;
+      MuonSystem->lepPassId[MuonSystem->nLeptons] = tmp.passId; //change back
       MuonSystem->lepPassLooseIso[MuonSystem->nLeptons] = tmp.passLooseIso;
       MuonSystem->lepPassTightIso[MuonSystem->nLeptons] = tmp.passTightIso;
-      MuonSystem->lepPassVTightIso[MuonSystem->nLeptons] = tmp.passVTightIso;
+      MuonSystem->lepPassVTightIso[MuonSystem->nLeptons] = tmp.passVTightIso; //change back
       MuonSystem->lepPassVVTightIso[MuonSystem->nLeptons] = tmp.passVVTightIso;
       
       if (!isData)
@@ -795,10 +825,12 @@ int events_with_dt=0;
       }
 
 
-      
+      //cout<<"Muon pt: "<<MuonSystem->lepPt[MuonSystem->nLeptons]<<endl;
       if (MuonSystem->lepPassTightIso[MuonSystem->nLeptons] && MuonSystem->lepPassId[MuonSystem->nLeptons] && MuonSystem->lepPt[MuonSystem->nLeptons]>26)
+      //if (true)
       //if (MuonSystem->lepPassTightIso[MuonSystem->nLeptons] && MuonSystem->lepPassId[MuonSystem->nLeptons])
       {
+        //cout<<"Found tag muon"<<endl;
         //comment out next three lines when matching to trigger object
         //MuonSystem->lepTag[MuonSystem->nLeptons] = true;
         //tag = true;
@@ -810,14 +842,15 @@ int events_with_dt=0;
         
         for (int trigObjNum=0; trigObjNum < nTrigObj; trigObjNum++)
         {
-
+          
           //cout<<"In trigger object loop"<<endl;
           if (abs(TrigObj_id[trigObjNum]) != 13) continue;
           //out<<"Filter bit: "<<TrigObj_filterBits[trigObjNum]<<endl;
           //now convert filterBits into base 10 and see whether the bit for 2^3 is set
           std::bitset<sizeof(int) * 8> binaryNumber(TrigObj_filterBits[trigObjNum]);
           //cout<<"Filter bit in base 10: "<<binaryNumber<<endl;
-          if (!(binaryNumber.test(3) && binaryNumber.test(0))) continue;
+          if (!(binaryNumber.test(3) && binaryNumber.test(1))) continue;
+          //if (!(binaryNumber.test(3))) continue;
           //cout<<"Trigger muon with filter bit found"<<endl;
           if (deltaR(tmp.lepton.Eta(), tmp.lepton.Phi(), TrigObj_eta[trigObjNum], TrigObj_phi[trigObjNum]) < 0.1)
           {
@@ -827,8 +860,10 @@ int events_with_dt=0;
             //cout<<"Matched trigger object to tag muon"<<endl;
             break;
           }
+          
         }
-      
+        
+        //matchedTriggerObj = true;
     
         if (matchedTriggerObj){
           numTag++;
@@ -912,7 +947,7 @@ int events_with_dt=0;
     //if (abs(MuonSystem->lepPt[0])>35)leading_muon_pt++;
     //if (abs(MuonSystem->lepPt[1])>20)subleading_muon_pt++;
     // if(MuonSystem->ZMass<120)continue; remove to see whole Z-peak
-    //if (tagCount>0)greater_than_one_tag++;
+    if (tagCount>0)greater_than_one_tag++;
 
 
     if(MuonSystem->nLeptons!=2)continue;
@@ -949,11 +984,11 @@ int events_with_dt=0;
   }
    Zmumu_events_passed++;   
     //cout<<"Zmumu events passed: "<<Zmumu_events_passed<<endl;
-    for (int i=0; i <tagCount; i++){
-      if (isData){ZMass_Hist->Fill(MuonSystem->ZMass);}
-      else{ZMass_Hist->Fill(MuonSystem->ZMass,genWeight*MuonSystem->pileupWeight);}
+    // for (int i=0; i <tagCount; i++){
+    //   if (isData){ZMass_Hist->Fill(MuonSystem->ZMass);}
+    //   else{ZMass_Hist->Fill(MuonSystem->ZMass,genWeight*MuonSystem->pileupWeight);}
 
-    }
+    // }
       MuonSystem->tree_->Fill();
 
       }
@@ -981,6 +1016,8 @@ int events_with_dt=0;
          NEvents->Write();
          accep->Write("acceptance");
          accep_met->Write("acceptance_met");
+         ZMass_Hist->Write();
+         ZMass_Hist_Gen->Write();
          outFile->Close();
       }
 
@@ -999,9 +1036,17 @@ int events_with_dt=0;
         NEvents->Write();
         probe_cluster_minDeltaR->Write();
         // outFile->Write();
+        ZMass_Hist->Write();
+        ZMass_Hist_Gen->Write();
         outFile->Close();
       }
-      /*
+      
+      cout<<"Analysis Campagin: "<<analysisTag<<endl;
+      cout<<"isData: "<<isData<<endl;
+      cout<<"Processed "<<maxEvents<<" events"<<endl;
+      cout<<"ZMuMu events selected ="<<Zmumu_events_passed<<endl;
+      cout<<"Fraction of events passing TnP "<<Zmumu_events_passed/maxEvents<<endl;
+      
       cout<<"Events Two Tagged: "<<events_two_tag<<endl;
       cout<<"Total Events Passed: "<<total_events_passed<<endl;
       //cout<<"Acceptances: "<<endl;
@@ -1038,7 +1083,7 @@ int events_with_dt=0;
       cout<<"Cumulative Matching Rate : "<<total_events_passed/Zmumu_events_passed*100<<"%"<<endl;
       cout<<"Events with dt : "<<events_with_dt<<endl;
       cout<<"Total Efficiency: "<<total_events_passed/maxEvents*100<<"%"<<endl;
-      */
+      
 
   
 }

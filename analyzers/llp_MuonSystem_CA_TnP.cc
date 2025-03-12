@@ -379,18 +379,72 @@ int events_with_dt=0;
     MuonSystem->lumiSec = luminosityBlock;
     MuonSystem->evtNum = event;
 
-    //check event flags
-    MuonSystem->Flag_HBHENoiseFilter = Flag_HBHENoiseFilter;
-    MuonSystem->Flag_globalSuperTightHalo2016Filter = Flag_globalSuperTightHalo2016Filter;
-    MuonSystem->Flag2_EcalDeadCellTriggerPrimitiveFilter = Flag_EcalDeadCellTriggerPrimitiveFilter;
-    MuonSystem->Flag_BadPFMuonFilter = Flag_BadPFMuonFilter;
-    MuonSystem->Flag_BadPFMuonDzFilter = Flag_BadPFMuonDzFilter;
-    MuonSystem->Flag_hfNoisyHitsFilter = Flag_hfNoisyHitsFilter;
-    MuonSystem->Flag_eeBadScFilter = Flag_eeBadScFilter;
-    MuonSystem->Flag_ecalBadCalibFilter = Flag_ecalBadCalibFilter;
+    // //check event flags
+    // MuonSystem->Flag_HBHENoiseFilter = Flag_HBHENoiseFilter;
+    // MuonSystem->Flag_globalSuperTightHalo2016Filter = Flag_globalSuperTightHalo2016Filter;
+    // MuonSystem->Flag2_EcalDeadCellTriggerPrimitiveFilter = Flag_EcalDeadCellTriggerPrimitiveFilter;
+    // MuonSystem->Flag_BadPFMuonFilter = Flag_BadPFMuonFilter;
+    // MuonSystem->Flag_BadPFMuonDzFilter = Flag_BadPFMuonDzFilter;
+    // MuonSystem->Flag_hfNoisyHitsFilter = Flag_hfNoisyHitsFilter;
+    // MuonSystem->Flag_eeBadScFilter = Flag_eeBadScFilter;
+    // MuonSystem->Flag_ecalBadCalibFilter = Flag_ecalBadCalibFilter;
 
-    MuonSystem->Flag_all = (Flag_HBHENoiseFilter && Flag_globalSuperTightHalo2016Filter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter && Flag_BadPFMuonDzFilter && Flag_hfNoisyHitsFilter && Flag_eeBadScFilter && Flag_ecalBadCalibFilter);
-    
+    // MuonSystem->Flag_all = (Flag_HBHENoiseFilter && Flag_globalSuperTightHalo2016Filter && Flag_EcalDeadCellTriggerPrimitiveFilter && Flag_BadPFMuonFilter && Flag_BadPFMuonDzFilter && Flag_hfNoisyHitsFilter && Flag_eeBadScFilter && Flag_ecalBadCalibFilter);
+    //updated noise filters
+    MuonSystem->Flag_goodVertices = Flag_goodVertices;
+      MuonSystem->Flag_globalSuperTightHalo2016Filter = Flag_globalSuperTightHalo2016Filter;
+      MuonSystem->Flag_EcalDeadCellTriggerPrimitiveFilter = Flag_EcalDeadCellTriggerPrimitiveFilter;
+      MuonSystem->Flag_BadPFMuonFilter = Flag_BadPFMuonFilter;
+      MuonSystem->Flag_BadPFMuonDzFilter = Flag_BadPFMuonDzFilter;
+      MuonSystem->Flag_hfNoisyHitsFilter = Flag_hfNoisyHitsFilter;
+      MuonSystem->Flag_eeBadScFilter = Flag_eeBadScFilter;
+      MuonSystem->Flag_all = Flag_eeBadScFilter && Flag_hfNoisyHitsFilter && Flag_BadPFMuonDzFilter && Flag_BadPFMuonFilter && Flag_EcalDeadCellTriggerPrimitiveFilter
+                              && Flag_globalSuperTightHalo2016Filter && Flag_goodVertices;
+      if (analysisTag == "Summer24") MuonSystem->Flag_ecalBadCalibFilter = Flag_ecalBadCalibFilter;
+
+      // Flag_ecalBadCalibFilter for nanoAOD: https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2#ECal_BadCalibration_Filter_Flag
+      if (analysisTag == "Summer24") MuonSystem->Flag_ecalBadCalibFilter = Flag_ecalBadCalibFilter;
+      else{
+        MuonSystem->Flag_ecalBadCalibFilter = true;
+        if (isData && run >= 362433 && run<=367144)
+        {
+          if (PuppiMET_pt > 100)
+          {
+            for(int i = 0; i < nJet; i++)
+            {
+              if (Jet_pt[i]<50) continue;
+              if (!(Jet_eta[i] <= -0.1 && Jet_eta[i]>=-0.5 && Jet_phi[i] <-1.8 && Jet_phi[i]> -2.1)) continue;
+              if (!(Jet_neEmEF[i] >0.9 || Jet_chEmEF[i]>0.9)) continue;
+              if (deltaPhi(PuppiMET_phi, Jet_phi[i])<2.9) continue;
+              Flag_ecalBadCalibFilter = false;
+            }
+          }
+        }
+      }
+     // jet veto map, following selections here: https://cms-jerc.web.cern.ch/Recommendations/#jet-veto-maps
+      MuonSystem->jetVeto = true;
+      
+      for(int i = 0; i < nJet; i++)
+      {
+        if (Jet_pt[i] <= 15) continue;
+        if (Jet_neEmEF[i] + Jet_chEmEF[i] >= 0.9) continue;
+        std::bitset<sizeof(int) * 8> jetID(Jet_jetId[i]);
+        //cout<<"Filter bit in base 10: "<<binaryNumber<<endl;
+        if (!jetID.test(1)) continue;
+        //if (!jetPassIDTight[i]) continue;
+        //remove overlaps
+        bool overlap = false;
+        for(int j = 0; j < nMuon; j++)
+        {
+          if (!Muon_isPFcand[j])continue;
+          if (RazorAnalyzer_trigEff::deltaR(Jet_eta[i],Jet_phi[i],Muon_eta[j], Muon_phi[j]) < 0.2) overlap = true;
+        }
+        if (overlap) continue;
+        //cout<<"about to call jet veto map"<<endl;
+        helper->getJetVetoMap(0,1);
+        if (helper->getJetVetoMap(Jet_eta[i],Jet_phi[i])>0.0) MuonSystem->jetVeto = false;
+        if (analysisTag == "Summer24" && helper->getJetVetoFpixMap(Jet_eta[i],Jet_phi[i])>0.0) MuonSystem->jetVeto = false;
+      } 
     if (!isData){
       MuonSystem->npu = Pileup_nTrueInt;
       MuonSystem->pileupWeight = helper->getPileupWeight(Pileup_nTrueInt);
@@ -438,6 +492,8 @@ int events_with_dt=0;
       //MuonSystem->rho = fixedGridRhoFastjetAll;
       MuonSystem->met = MET_pt;
       MuonSystem->metPhi = MET_phi;
+      MuonSystem->puppiMet = PuppiMET_pt;
+      MuonSystem->puppiMetPhi = PuppiMET_phi;
       /*
       if(signalScan && !isData)Total2D[make_pair(MuonSystem->mX, MuonSystem->ctau)]->Fill(1.0, genWeight*MuonSystem->pileupWeight);
       if(signalScan && !isData)
@@ -756,7 +812,7 @@ int events_with_dt=0;
           //now convert filterBits into base 10 and see whether the bit for 2^3 is set
           std::bitset<sizeof(int) * 8> binaryNumber(TrigObj_filterBits[trigObjNum]);
           //cout<<"Filter bit in base 10: "<<binaryNumber<<endl;
-          if (!(binaryNumber.test(3) && binaryNumber.test(0))) continue;
+          if (!(binaryNumber.test(3) && binaryNumber.test(1))) continue;
           //cout<<"Trigger muon with filter bit found"<<endl;
           if (deltaR(tmp.lepton.Eta(), tmp.lepton.Phi(), TrigObj_eta[trigObjNum], TrigObj_phi[trigObjNum]) < 0.1)
           {
