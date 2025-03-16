@@ -30,7 +30,7 @@ std::string ParseCommandLine( int argc, char* argv[], std::string opt )
 
 
 // Get total number of events in the sample and determine normalization weight factor
-double getNormalizationWeight(string filename, string datasetName, double intLumi) {
+double getNormalizationWeight(string filename, string datasetName, double intLumi, float NEvents) {
 
   //Get Number of Events in the Sample
   TFile *file = new TFile(filename.c_str(),"READ");
@@ -52,7 +52,7 @@ double getNormalizationWeight(string filename, string datasetName, double intLum
   double NEvents = hist->GetBinContent(1);
   */
   //double NEvents = 5903996.0 * 2265.28;
-  double NEvents = 12985380936.0;
+  //double NEvents = 12985380936.0;
   //Get CrossSection
   char* cmsswPath;
   cmsswPath = getenv("CMSSW_BASE");
@@ -92,6 +92,12 @@ int main(int argc, char* argv[]) {
     }
     else cout << "No integrated luminosity specified; normalizing to 1/pb" << endl;
 
+    float NEvents = 1.0;
+    if(argc >= 4){
+        NEvents = atof(argv[3]);
+        cout << "Using MC Weight Sum of  " << NEvents << " weighted events for normalizaton denominator" << endl;
+    }
+    else cout << "No initial sum of weights specified, using value in function instead" << endl;
     ifstream filein(inputList.c_str());
     string curFilename;
     vector<string> inputLines;
@@ -126,7 +132,7 @@ int main(int argc, char* argv[]) {
         string fileName = inputs[1];
 
         //get the weight to be applied to this dataset
-        double normalizationWeight = getNormalizationWeight(fileName, datasetName, intLumi);
+        double normalizationWeight = getNormalizationWeight(fileName, datasetName, intLumi, NEvents);
 
         //create output file
         TFile *outputFile = new TFile(Form("%s_%.0fpb_weighted.root", (fileName.substr(0, fileName.find_last_of("."))).c_str(), intLumi), "RECREATE");
