@@ -12,7 +12,7 @@ jobnumber=$5
 maxjob=$6
 sample=${inputfilelist##*/}
 sample=${sample%.txt}
-outputfile=${sample}_Job${jobnumber}_of_${maxjob}_postTnP_noClusters.root
+outputfile=${sample}_Job${jobnumber}_of_${maxjob}.root
 outputDirectory=$7
 analyzerTag=$8
 CMSSW_BASE=$9
@@ -72,28 +72,18 @@ then
 #cp Runllp_MuonSystem_CA_TnP CMSSW_10_6_20/src
 #cp EvaluateDNN.py CMSSW_10_6_20/src
 #cp training_CA0p6_NoMerging_WeightedClusterSize_bkgMC_CSCOnly_adversarial_PlusBeamHalo_240510.h5
-	if [ -f RazorRun ]
+	if [ -f *"Runllp"* ]
 	then
 		#cp $CMSSW_BASE/src/run3_llp_analyzer/RazorRun ./
 		#cp $CMSSW_BASE/src/run3_llp_analyzer/DNNevaluation/EvaluateDNN.py ./
         #        cp $CMSSW_BASE/src/run3_llp_analyzer/DNNevaluation/*.h5 .
-		cp RazorRun ${runDir}
-		cp Runllp_MuonSystem_CA_TnP ${runDir}
-		cp Runllp_MuonSystem_CA_TnP_noClusters ${runDir}
+		cp Run${analysisType} ${runDir}
 		cp EvaluateDNN.py ${runDir}
 		cp training_CA0p6_NoMerging_WeightedClusterSize_bkgMC_CSCOnly_adversarial_PlusBeamHalo_240510.h5 ${runDir}
 		cp ${sample}.txt ${runDir}
-		cp PileupReweight_Summer22.root ${runDir}
-		cp PileupReweight_Summer22EE.root ${runDir}
-		cp PileupReweight_Summer23.root ${runDir}
-		cp PileupReweight_Summer23BPix.root ${runDir}
-		cp PileupReweight_Winter24.root ${runDir}
-
-		cp Summer22_23Sep2023_RunCD_v1.root ${runDir}
-		cp Summer22EE_23Sep2023_RunEFG_v1.root ${runDir}
-		cp Summer23BPixPrompt23_RunD_v1.root ${runDir}
-		cp Summer23Prompt23_RunC_v1.root ${runDir}
-		cp Winter24Prompt24_2024BCDEFGHI.root ${runDir}
+		cp *Summer*.root ${runDir} #should get Pileupreweight files
+		cp *Prompt*.root ${runDir} #should get jet veto files
+		#cp Winter24Prompt24_2024BCDEFGHI.root ${runDir}
 
 
 
@@ -118,10 +108,18 @@ then
 		echo "start copying files"
 		while read line; do   xrdcp -f ${line} .; done < "inputfilelistForThisJob_${jobnumber}.txt"
 		rm inputfilelistForThisJob_${jobnumber}.txt
-		ls -ltr *ntupler*.root
+		#ls -ltr *ntupler*.root
 		ls -ltr
+		#renaming files with -- in the name
+		#for filename in *; do
+		#	if [ ${filename:0:2}=="--" ]; then
+		#		mv $filename ${filename:2}
+		#	fi
+		#done
 		echo "now sending ls output to new file"
-		ls *Job*.root > inputfilelistForThisJob_${jobnumber}.txt
+		#ls *NANO*.root
+		ls ./*NANO*.root ./*Job*.root > inputfilelistForThisJob_${jobnumber}.txt
+		
 		
 		
 
@@ -139,24 +137,34 @@ then
 		else
 			#echo ./Runllp_MuonSystem_CA_TnP inputfilelistForThisJob_${jobnumber}.txt -d=${isData}  -f=${outputfile} -l=${analyzerTag}
 
-			#./Runllp_MuonSystem_CA_TnP inputfilelistForThisJob_${jobnumber}.txt  --isData  -f=${outputfile}
-			echo ./Runllp_MuonSystem_CA_TnP_noClusters inputfilelistForThisJob_${jobnumber}.txt  -f=${outputfile} -l=${analyzerTag}
-			./Runllp_MuonSystem_CA_TnP_noClusters inputfilelistForThisJob_${jobnumber}.txt  -f=${outputfile} -l=${analyzerTag}
+			if [[ ${isData} == "no" ]]; then #check if it is DY MC, if a signal sample this won't work
+				echo "Running on MC sample"
+				echo ./Run${analysisType} inputfilelistForThisJob_${jobnumber}.txt  -f=${outputfile} -l=${analyzerTag}
+				./Run${analysisType} inputfilelistForThisJob_${jobnumber}.txt  -f=${outputfile} -l=${analyzerTag}
+			else
+				echo "Running on data sample"
+				echo ./Run${analysisType} inputfilelistForThisJob_${jobnumber}.txt  --isData -f=${outputfile} -l=${analyzerTag}
+				./Run${analysisType} inputfilelistForThisJob_${jobnumber}.txt  --isData -f=${outputfile} -l=${analyzerTag}
+			fi
+			# #./Runllp_MuonSystem_CA_TnP inputfilelistForThisJob_${jobnumber}.txt  --isData  -f=${outputfile}
+			# echo ./${analysisType} inputfilelistForThisJob_${jobnumber}.txt  -f=${outputfile} -l=${analyzerTag}
+			# ./${analysisType} inputfilelistForThisJob_${jobnumber}.txt  -f=${outputfile} -l=${analyzerTag}
 		fi
-
+			
 		echo ${outputfile}
 		echo ${outputDirectory}
-		ls *postTnP.root > output.txt
+		ls *Job*.root > output.txt
 		echo "Output ROOT files: "
 		cat output.txt
 		##^_^##
 		echo "RazorRun_T2 finished"
 		date
 
-		#echo "start DNN evaluation"
-		#source /cvmfs/sft.cern.ch/lcg/views/LCG_103/x86_64-centos7-gcc11-opt/setup.sh
-		#python EvaluateDNN.py --in_file ${outputfile}
-		
+		if [[ ${analysisType} != *"noClusters"* && ${analysisType} != *"TrigEff"* ]]; then
+			echo "start DNN evaluation"
+			source /cvmfs/sft.cern.ch/lcg/views/LCG_103/x86_64-centos7-gcc11-opt/setup.sh
+			python EvaluateDNN.py --in_file ${outputfile}
+		fi
 		sleep 2
 		echo "I slept for 2 second"
 

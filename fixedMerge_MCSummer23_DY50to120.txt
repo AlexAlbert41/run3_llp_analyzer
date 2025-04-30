@@ -1,1 +1,0 @@
-root://cmsxrootd.fnal.gov//store/group/lpclonglived/MergedNtuples/merge_dymc/merge_displacedJetMuon_ntupler_dymc.root

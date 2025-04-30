@@ -149,7 +149,7 @@ int main(int argc, char* argv[]){
 	      }
 	    else
 	      {
-		theChain->SetName("llp");
+		theChain->SetName("Events");
 		std::cout << "[INFO]: alternative configuration for tchain"<< std::endl;
 	      }
 	    theChain->Add( curFileName.c_str() );

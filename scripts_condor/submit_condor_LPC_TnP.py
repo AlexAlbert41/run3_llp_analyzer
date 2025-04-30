@@ -8,21 +8,33 @@ import glob
 import sys
 from collections import OrderedDict
 
+sample = sys.argv[1]
+analyzer_str = sys.argv[2]
+output_end = sys.argv[3]
+log_name = sys.argv[4]
 
-os.system("mkdir -p submit_MC_noClusters")
-os.system("mkdir -p log_MC_noClusters")
+log_dir = "log_{}".format(log_name)
+submit_dir = "submit_{}".format(log_name)
+os.system("mkdir -p {}".format(log_dir))
+os.system("mkdir -p {}".format(submit_dir))
 executable = "scripts_condor/runAnalyzer.sh"
-analyzer = 'llp_MuonSystem_CA_TnP_noClusters'
+#analyzer = 'llp_MuonSystem_CA_TnP'
 filesPerJob = 10
 ntupler_version = 'V1p19/Data2023/'
 
 #ntupler_version = "V1p19/MC_Summer22EE/v1/sixie/"
 
-sample = sys.argv[1]
 
+if analyzer_str=="TnP":analyzer="llp_MuonSystem_CA_TnP"
+elif analyzer_str=="TnP_mdsnano":analyzer="llp_MuonSystem_CA_TnP_mdsnano"
+elif analyzer_str=="TnP_noClusters":analyzer="llp_MuonSystem_CA_TnP_noClusters"
+elif analyzer_str=="TrigEff":analyzer="llp_MuonSystem_CA_TrigEff"
+elif analyzer_str=="TrigEff_mdsnano":analyzer="llp_MuonSystem_CA_TrigEff_mdsnano"
+else:print("analyzer string not recognized, exiting ...");exit()
 analyzer_version = 'v11'
 #outputDirectoryBase="/storage/af/group/phys_exotica/delayedjets/displacedJetMuonAnalyzer/Run3/{0}/{1}/".format(ntupler_version, analyzer_version)
-outputDirectoryBase="/store/group/lpclonglived/amalbert/Data_MC_Comp_TnP/results_from_cache_noSkim/MC_noClusters/"
+#outputDirectoryBase="/store/group/lpclonglived/amalbert/Data_MC_Comp_TnP/results_from_cache_noSkim/{}/".format(output_end)
+outputDirectoryBase="/store/group/lpclonglived/amalbert/HMT_L1_Eff_Output/{}/".format(output_end)
 HOME = os.getenv('HOME')
 CMSSW_BASE = os.getenv('CMSSW_BASE')
 #Analyzer_DIR = CMSSW_BASE+"/src/run3_llp_analyzer/"
@@ -62,12 +74,24 @@ outputDirectory = outputDirectoryBase + sample + "/"
 print(sample)
 if "Run2022E" in sample or "Run2022F" in sample or "Run2022G" in sample or "MC_Summer22EE" in sample:
     analyzerTag = "Summer22EE"
+    jetVetoMap = "Summer22EE_23Sep2023_RunEFG_v1.root"
+    pileupWeights = "PileupReweight_Summer22EE.root"
 elif "Run2022C" in sample or "Run2022D" in sample or "MC_Summer22" in sample:
     analyzerTag = "Summer22"
+    jetVetoMap = "Summer22_23Sep2023_RunCD_v1.root"
+    pileupWeights = "PileupReweight_Summer22.root"
 elif "Run2023D" in sample or "MC_Summer23BPix" in sample:
     analyzerTag = "Summer23BPix"
+    jetVetoMap = "Summer23BPixPrompt23_RunD_v1.root"
+    pileupWeights = "PileupReweight_Summer23BPix.root"
 elif "Run2023B" in sample or "Run2023C" in sample or "MC_Summer23" in sample:
     analyzerTag = "Summer23"
+    jetVetoMap = "Summer23Prompt23_RunC_v1.root"
+    pileupWeights = "PileupReweight_Summer23.root"
+elif "Run2024" in sample or "MC_Summer24" in sample:
+    analyzerTag = "Summer24"
+    jetVetoMap = "Winter24Prompt24_2024BCDEFGHI.root"
+    pileupWeights = "PileupReweight_Summer24.root"
 else:
     print("Couldn't find a valid analyzer tag. Exiting ...")
     exit()
@@ -75,7 +99,8 @@ else:
 
 #year = datasetList[sample][0]
 #isData = datasetList[sample][1]
-isData="no"
+if "MC" in sample:isData="no"
+else:isData="--isData"
 #####################################
 #Create Condor JDL file
 #####################################
@@ -83,7 +108,7 @@ isData="no"
 #os.system("rm -f log/{}_{}_Job*".format(analyzer, sample))
 
 
-jdl_file="submit_MC_noClusters/{}_{}_{}.jdl".format(analyzer, sample.replace("/","_"), maxjob)
+jdl_file="{}/{}_{}_{}.jdl".format(submit_dir, analyzer, sample.replace("/","_"), maxjob)
 
 tmpCondorJDLFile = open(jdl_file,"w")
 
@@ -94,9 +119,9 @@ print("Arguments = {} {} {} {} $(ProcId) {} {} {} {} {}/ \n"\
 tmpCondorJDLFile.write("Arguments = {} {} {} {} $(ProcId) {} {} {} {} {}/ \n"\
                         .format(analyzer, inputfilelist, isData, filesPerJob, maxjob, outputDirectory, analyzerTag, CMSSW_BASE, HOME))
 
-tmpCondorJDLFile.write("Log = log_MC_noClusters/{}_{}_Job$(ProcId)_Of_{}_$(Cluster).$(Process).log \n".format(analyzer, sample.replace("/","_"), maxjob))
-tmpCondorJDLFile.write("Output = log_MC_noClusters/{}_{}_Job$(ProcId)_Of_{}_$(Cluster).$(Process).out \n".format(analyzer, sample.replace("/","_"), maxjob))
-tmpCondorJDLFile.write("Error = log_MC_noClusters/{}_{}_Job$(ProcId)_Of_{}_$(Cluster).$(Process).err \n".format(analyzer, sample.replace("/","_"), maxjob))
+tmpCondorJDLFile.write("Log = {}/{}_{}_Job$(ProcId)_Of_{}_$(Cluster).$(Process).log \n".format(log_dir,analyzer, sample.replace("/","_"), maxjob))
+tmpCondorJDLFile.write("Output = {}/{}_{}_Job$(ProcId)_Of_{}_$(Cluster).$(Process).out \n".format(log_dir, analyzer, sample.replace("/","_"), maxjob))
+tmpCondorJDLFile.write("Error = {}/{}_{}_Job$(ProcId)_Of_{}_$(Cluster).$(Process).err \n".format(log_dir, analyzer, sample.replace("/","_"), maxjob))
 
 tmpCondorJDLFile.write("+JobQueue=\"Short\" \n")
 tmpCondorJDLFile.write("RequestMemory = 4096 \n")
@@ -111,7 +136,7 @@ tmpCondorJDLFile.write("run_as_owner = True \n")
 #tmpCondorJDLFile.write("x509userproxy = {}/x509_proxy \n".format(HOME))
 tmpCondorJDLFile.write("should_transfer_files = YES \n")
 tmpCondorJDLFile.write("when_to_transfer_output = ON_EXIT_OR_EVICT \n")
-tmpCondorJDLFile.write("Transfer_Input_Files = RazorRun,{},bin/Runllp_MuonSystem_CA_TnP,bin/Runllp_MuonSystem_CA_TnP_noClusters,DNNevaluation/EvaluateDNN.py,DNNevaluation/training_CA0p6_NoMerging_WeightedClusterSize_bkgMC_CSCOnly_adversarial_PlusBeamHalo_240510.h5, data/JetVetoMap/Summer22_23Sep2023_RunCD_v1.root, data/JetVetoMap/Summer22EE_23Sep2023_RunEFG_v1.root,data/JetVetoMap/Summer23BPixPrompt23_RunD_v1.root,data/JetVetoMap/Summer23Prompt23_RunC_v1.root,data/JetVetoMap/Winter24Prompt24_2024BCDEFGHI.root,data/PileupWeights/PileupReweight_MC_Fall18_ggH_HToSSTobbbb_MH-125_TuneCP5_13TeV-powheg-pythia8.root,data/PileupWeights/PileupReweight_Summer22.root,data/PileupWeights/PileupReweight_Summer22EE.root,data/PileupWeights/PileupReweight_Summer23.root,data/PileupWeights/PileupReweight_Summer23BPix.root\n".format(inputfilelist))
+tmpCondorJDLFile.write("Transfer_Input_Files = RazorRun,{},bin/Run{},DNNevaluation/EvaluateDNN.py,DNNevaluation/training_CA0p6_NoMerging_WeightedClusterSize_bkgMC_CSCOnly_adversarial_PlusBeamHalo_240510.h5, data/JetVetoMap/{}, data/PileupWeights/{}\n".format(inputfilelist,analyzer,jetVetoMap,pileupWeights))
 tmpCondorJDLFile.write("Queue {} \n".format(maxjob))
 #tmpCondorJDLFile.write("Queue {} \n".format(2))
 tmpCondorJDLFile.close()

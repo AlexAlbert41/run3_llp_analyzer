@@ -179,14 +179,14 @@ void RazorHelper::loadJetVeto_Summer23BPix() {
 ////////////////////////////////////////////////
 void RazorHelper::loadTag_Summer24() {
   loadPileup_Summer24();
-  loadHMTEfficiency();
+  //loadHMTEfficiency();
   loadJetVeto_Summer24();
 }
 
 void RazorHelper::loadPileup_Summer24() {
     // pileup weights
     std::cout << "RazorHelper: loading pileup weight histograms" << std::endl;
-    pileupWeightFile = TFile::Open("PileupReweight_Summer23BPix.root");
+    pileupWeightFile = TFile::Open("PileupReweight_Summer24.root");
     pileupWeightHist = (TH1F*)pileupWeightFile->Get("npu_nominal");
     pileupWeightSysUpHist = (TH1F*)pileupWeightFile->Get("npu_up");
     pileupWeightSysDownHist = (TH1F*)pileupWeightFile->Get("npu_down");

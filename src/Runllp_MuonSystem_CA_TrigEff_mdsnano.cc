@@ -11,7 +11,7 @@
 #include <TTree.h>
 #include <TChain.h>
 
-#include <llp_MuonSystem_CA_TrigEff.h>
+#include <llp_MuonSystem_CA_TrigEff_mdsnano.h>
 
 using namespace std;
 
@@ -32,7 +32,7 @@ std::string ParseCommandLine( int argc, char* argv[], std::string opt )
 
 void usage()
 {
-  std::cerr << "Usage: Runllp_MuonSystem_CA_TrigEff  <input list>  [options]\n[options]:\n"
+  std::cerr << "Usage: Runllp_MuonSystem_CA_TrigEff_mdsnano  <input list>  [options]\n[options]:\n"
 	    << "-d  --isData\n"
 	    << "-f=  --outputFile=<output filename> (optional)\n"
 	    << "-n=  --optionNumber=<option number> (optional)\n"
@@ -165,10 +165,10 @@ int main(int argc, char* argv[]){
     std::cout << "Loaded Total of " << NFilesLoaded << " files\n";
     if ( theChain == NULL ) return -1;
 
-    llp_MuonSystem_CA_TrigEff analyzer(theChain);
+    llp_MuonSystem_CA_TrigEff_mdsnano analyzer(theChain);
 
     //------ EXECUTE ------//
-    cout << "Executing llp_MuonSystem_CA_TrigEff..." << endl;
+    cout << "Executing llp_MuonSystem_CA_TrigEff_mdsnano..." << endl;
     analyzer.EnableAll();
     analyzer.Analyze(isData, option, outputFileName, label);
     cout << "Process completed!" << endl;

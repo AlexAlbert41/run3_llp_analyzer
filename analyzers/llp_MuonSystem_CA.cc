@@ -236,7 +236,7 @@ void llp_MuonSystem_CA::Analyze(bool isData, int options, string outputfilename,
     // std::cout << "deb1 " << jentry << std::endl;
 
 
-
+    cout<<"Event number: "<<eventNum<<endl;
 
     if (!isData && signalScan)
     {

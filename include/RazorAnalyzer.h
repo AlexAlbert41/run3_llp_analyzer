@@ -6,7 +6,7 @@
 #define RazorAnalyzer_h
 
 #include "llp_event.h" //This is a MakeClass of the llp tree in the ntuple to be analyzed
-
+#include "merged_event.h"
 
 //ROOT includes
 #include <TROOT.h>

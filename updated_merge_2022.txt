@@ -1,4 +1,0 @@
-root://cmsxrootd.fnal.gov//store/group/lpclonglived/MergedNtuples_Run3/merged/merged_Run2022E.root
-root://cmsxrootd.fnal.gov//store/group/lpclonglived/MergedNtuples_Run3/merged/merged_Run2022F.root
-root://cmsxrootd.fnal.gov//store/group/lpclonglived/MergedNtuples_Run3/merged/merged_Run2022G.root
-

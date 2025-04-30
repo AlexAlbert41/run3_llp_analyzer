@@ -300,15 +300,13 @@ int events_with_dt=0;
     if (ientry < 0) break;
     //GetEntry(ientry);
     nb = fChain->GetEntry(jentry); nbytes += nb;
+//    cout<<"event num: "<<event<<endl;
     //cout<<"Got entry"<<endl;
     //cout<<"jentry: "<<jentry<<endl;
-    if (!HLT_IsoMu24) continue;
-    past_HLT_IsoMu24++;
     //fill normalization histogram
     MuonSystem->InitVariables();
     //cout<<"Inited variables"<<endl;
     // std::cout << "deb1 " << jentry << std::endl;
-
     bool pass_pt_event = false;
     bool pass_eta_event = false;
     bool pass_looseId_event = false;
@@ -358,7 +356,7 @@ int events_with_dt=0;
     //event info
     //MuonSystem->weight=weight;
     // commented out for MC Simulation Study
-    /*
+    
     if (isData)
     {
       NEvents->Fill(1);
@@ -369,10 +367,10 @@ int events_with_dt=0;
       MuonSystem->weight = genWeight;
       NEvents->Fill(1, genWeight);
     }
-    */
     
-    MuonSystem->weight = genWeight;
-    NEvents->Fill(1, genWeight);
+    
+    //MuonSystem->weight = genWeight;
+    //NEvents->Fill(1, genWeight);
     //MuonSystem->runNum = run;
     //MuonSystem->lumiSec = luminosityBlock;
     //MuonSystem->evtNum = event;
@@ -384,6 +382,8 @@ int events_with_dt=0;
     MuonSystem->lumiSec = luminosityBlock;
     MuonSystem->evtNum = event;
 
+    if (!HLT_IsoMu24) continue;
+    past_HLT_IsoMu24++;
     //check event flags 
     //old flags commented out
     /*

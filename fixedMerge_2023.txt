@@ -1,6 +1,0 @@
-root://cmsxrootd.fnal.gov//store/user/zhao1/llp/merge_Run2023/merge_displacedJetMuon_ntupler_Muon0_Run2023B.root
-root://cmsxrootd.fnal.gov//store/user/zhao1/llp/merge_Run2023/merge_displacedJetMuon_ntupler_Muon0_Run2023C.root
-root://cmsxrootd.fnal.gov//store/user/zhao1/llp/merge_Run2023/merge_displacedJetMuon_ntupler_Muon0_Run2023D.root
-root://cmsxrootd.fnal.gov//store/user/zhao1/llp/merge_Run2023/merge_displacedJetMuon_ntupler_Muon1_Run2023B.root
-root://cmsxrootd.fnal.gov//store/user/zhao1/llp/merge_Run2023/merge_displacedJetMuon_ntupler_Muon1_Run2023C.root
-root://cmsxrootd.fnal.gov//store/user/zhao1/llp/merge_Run2023/merge_displacedJetMuon_ntupler_Muon1_Run2023D.root
