@@ -24,4 +24,4 @@ After all of your condor jobs are done, you can hadd the individual output files
 
 Lastly, we run the hadd'ed data over the golden json, which filters out events that happened during "bad" runs. Take a look at this repo, particularly this script that needs to be run.
 https://github.com/AlexAlbert41/RazorCommon/blob/master/Tools/bin/run_goldenJSONLPC.sh
-This repo needs to be installed in the <br> src <br> of your CMSSW directory, NOT within run3_llp_analyzer. Otherwise, things break. You will have to change the input/output directories and so forth. I also used this code most recently with a newer os/CMSSW, so I can't promise compatibility with CMSSW10. 
+This repo needs to be installed in the `src` of your CMSSW directory, NOT within run3_llp_analyzer. Otherwise, things break. You will have to change the input/output directories and so forth. I also used this code most recently with a newer os/CMSSW, so I can't promise compatibility with CMSSW10. 
